@@ -1,0 +1,31 @@
+Server error: Traceback (most recent call last):
+  File "C:\Projects\GEMINI-hackaton\backend\main.py", line 175, in websocket_endpoint
+    session_id = await session_manager.create_session(websocket, user_id)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Projects\GEMINI-hackaton\backend\streaming\session_manager.py", line 89, in create_session
+    await self._agent.initialize_session(session_id)
+  File "C:\Projects\GEMINI-hackaton\backend\agents\nexus_agent.py", line 594, in initialize_session
+    await self._navigator_engine.start_session(session_id)
+  File "C:\Projects\GEMINI-hackaton\backend\tools\navigator_engine.py", line 55, in start_session
+    await self._ensure_browser()
+  File "C:\Projects\GEMINI-hackaton\backend\tools\navigator_engine.py", line 46, in _ensure_browser
+    self._playwright = await async_playwright().start()
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Projects\GEMINI-hackaton\venv\Lib\site-packages\playwright\async_api\_context_manager.py", line 51, in start
+    return await self.__aenter__()
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Projects\GEMINI-hackaton\venv\Lib\site-packages\playwright\async_api\_context_manager.py", line 46, in __aenter__
+    playwright = AsyncPlaywright(next(iter(done)).result())
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Projects\GEMINI-hackaton\venv\Lib\site-packages\playwright\_impl\_transport.py", line 120, in connect
+    self._proc = await asyncio.create_subprocess_exec(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ItzZonk\AppData\Local\Programs\Python\Python312\Lib\asyncio\subprocess.py", line 224, in create_subprocess_exec
+    transport, protocol = await loop.subprocess_exec(
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ItzZonk\AppData\Local\Programs\Python\Python312\Lib\asyncio\base_events.py", line 1756, in subprocess_exec
+    transport = await self._make_subprocess_transport(
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ItzZonk\AppData\Local\Programs\Python\Python312\Lib\asyncio\base_events.py", line 528, in _make_subprocess_transport
+    raise NotImplementedError
+NotImplementedError

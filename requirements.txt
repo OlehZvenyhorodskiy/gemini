@@ -1,0 +1,21 @@
+# Google ADK & Gemini
+google-adk>=1.2.0
+google-genai>=1.5.0
+
+# Web Framework
+fastapi>=0.115.0
+uvicorn[standard]>=0.34.0
+websockets>=14.0
+
+# Firebase / Firestore
+firebase-admin>=6.6.0
+
+# Image processing
+Pillow>=11.0.0
+
+# Utilities
+python-dotenv>=1.0.1
+pydantic>=2.10.0
+
+# Browser Automation (Navigator mode)
+playwright>=1.49.0

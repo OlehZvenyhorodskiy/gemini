@@ -1,0 +1,41 @@
+# Google Cloud Build — automated deployment to Cloud Run
+# Builds the Docker image, pushes to Container Registry, and deploys
+# to Cloud Run with proper secret injection and scaling settings.
+steps:
+  # Build the Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/nexus-agent', '.']
+
+  # Push to Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/nexus-agent']
+
+  # Deploy to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'nexus-agent'
+      - '--image=gcr.io/$PROJECT_ID/nexus-agent'
+      - '--region=us-central1'
+      - '--platform=managed'
+      - '--allow-unauthenticated'
+      - '--port=8080'
+      - '--memory=2Gi'
+      - '--cpu=2'
+      - '--timeout=3600'
+      - '--concurrency=80'
+      - '--min-instances=0'
+      - '--max-instances=10'
+      - '--set-env-vars=GOOGLE_CLOUD_PROJECT=$PROJECT_ID'
+      - '--set-secrets=GOOGLE_API_KEY=${_API_KEY_SECRET}:latest'
+
+substitutions:
+  _API_KEY_SECRET: 'nexus-gemini-api-key'
+
+images:
+  - 'gcr.io/$PROJECT_ID/nexus-agent'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
