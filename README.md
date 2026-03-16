@@ -1,16 +1,14 @@
 # 🌌 NEXUS — The Multimodal AI Agent Platform
-
 > 🏆 **Built for the [Gemini Live Agent Challenge](https://geminiliveagentchallenge.devpost.com/)**
 >
 > *14 Specialized Personas. One Voice. Infinite Possibilities.*
 
-[![Demo Video](https://img.shields.io/badge/▶-Watch%20Demo-red?style=for-the-badge&logo=youtube)]([https://youtu.be/Mqp9Kphd_jk])
-[![Live Demo](https://img.shields.io/badge/🚀-Try%20Live%20Demo-4285F4?style=for-the-badge)]([https://nexus-agent-olpaxgmyzq-ew.a.run.app/])
+[![Demo Video](https://img.shields.io/badge/▶-Watch%20Demo-red?style=for-the-badge&logo=youtube)](https://youtu.be/Mqp9Kphd_jk)
+[![Live Demo](https://img.shields.io/badge/🚀-Try%20Live%20Demo-4285F4?style=for-the-badge)](https://nexus-agent-olpaxgmyzq-ew.a.run.app/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 ![Python](https://img.shields.io/badge/python-3.12%2B-blue)
 ![Next.js](https://img.shields.io/badge/next.js-15.1-black)
 ![Gemini](https://img.shields.io/badge/AI-Gemini%202.5-4285F4)
-
 ---
 
 ## 🦄 What Makes NEXUS Unique
