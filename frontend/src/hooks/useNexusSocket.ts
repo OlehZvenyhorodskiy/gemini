@@ -67,6 +67,7 @@ export interface UseNexusSocketReturn {
     mode: AgentMode;
     setMode: React.Dispatch<React.SetStateAction<AgentMode>>;
     connectWebSocket: () => void;
+    disconnectWebSocket: () => void;
     sendTextMessage: () => void;
     switchMode: (newMode: AgentMode) => void;
     sendInterrupt: () => void;
@@ -103,6 +104,7 @@ export function useNexusSocket(
     const [sessionId, setSessionId] = useState("");
 
     const wsRef = useRef<WebSocket | null>(null);
+    const isIntentionalDisconnectRef = useRef(false);
 
     // Debounce rapid state flickers (listening → thinking → listening in <100ms)
     const agentStateTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -273,6 +275,7 @@ export function useNexusSocket(
         wsRef.current = ws;
 
         ws.onopen = () => {
+            isIntentionalDisconnectRef.current = false;
             reconnectAttemptRef.current = 0; // Reset backoff on success
             setIsConnected(true);
             setAgentState("listening");
@@ -296,6 +299,8 @@ export function useNexusSocket(
         ws.onclose = () => {
             setIsConnected(false);
             setAgentState("disconnected");
+            
+            if (isIntentionalDisconnectRef.current) return;
             
             // Exponential backoff: 3s, 6s, 12s, 24s, capped at 30s
             const attempt = reconnectAttemptRef.current;
@@ -325,6 +330,13 @@ export function useNexusSocket(
         setMessages([]);
         if (wsRef.current?.readyState === WebSocket.OPEN) {
             wsRef.current.send(JSON.stringify({ type: "mode", mode: newMode }));
+        }
+    }, []);
+
+    const disconnectWebSocket = useCallback(() => {
+        isIntentionalDisconnectRef.current = true;
+        if (wsRef.current) {
+            wsRef.current.close();
         }
     }, []);
 
@@ -362,6 +374,7 @@ export function useNexusSocket(
         mode,
         setMode,
         connectWebSocket,
+        disconnectWebSocket,
         sendTextMessage,
         switchMode,
         sendInterrupt,

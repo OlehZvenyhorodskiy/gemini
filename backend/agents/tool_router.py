@@ -165,7 +165,11 @@ class ToolRouter:
             )
             if response.candidates and response.candidates[0].content:
                 text = response.candidates[0].content.parts[0].text
-                return {"status": "success", "consultation_result": text}
+                return {
+                    "status": "success", 
+                    "consultation_result": text,
+                    "specialty": specialty
+                }
             return {"status": "error", "message": "Sub-agent returned no result."}
         except Exception as e:
             logger.error(f"Consultation error: {e}")

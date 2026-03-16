@@ -126,6 +126,12 @@ export default function NexusPage() {
                 if (result?.screenshot && typeof result.screenshot === "string") {
                     setLatestScreenshot(result.screenshot);
                 }
+                
+                if (result?.consultation_result && typeof result.consultation_result === "string") {
+                    const text = result.consultation_result;
+                    const specialty = (result.specialty as string) || "research";
+                    speakWithSubAgent(text, specialty);
+                }
                 break;
             }
         }
@@ -138,7 +144,7 @@ export default function NexusPage() {
         wsRef, isConnected, sessionId, agentState,
         messages, setMessages, textInput, setTextInput,
         mode, setMode,
-        connectWebSocket, sendTextMessage, switchMode, sendInterrupt,
+        connectWebSocket, disconnectWebSocket, sendTextMessage, switchMode, sendInterrupt,
         addMessage, addSystemMessage,
     } = nexusSocket;
 
@@ -345,7 +351,7 @@ export default function NexusPage() {
 
     const handleGoHome = useCallback(() => {
         setShowLanding(true);
-        if (wsRef.current?.readyState === WebSocket.OPEN) wsRef.current.close();
+        nexusSocket.disconnectWebSocket();
         nexusSocket.setAgentState("disconnected");
         stopRecording();
         stopVideoCapture();
@@ -410,6 +416,51 @@ export default function NexusPage() {
             setIsLoadingHistory(false);
         }
     }, [setMessages, addSystemMessage]);
+
+    const speakWithSubAgent = useCallback((text: string, specialty: string) => {
+        if (typeof window === "undefined" || !window.speechSynthesis) return;
+
+        // 1. Play "radio switch" beep
+        try {
+            const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = "sine";
+            osc.frequency.setValueAtTime(880, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(440, ctx.currentTime + 0.1);
+            gain.gain.setValueAtTime(0.1, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start();
+            osc.stop(ctx.currentTime + 0.1);
+        } catch { /* noop */ }
+
+        // 2. TTS with different voice
+        let voices = window.speechSynthesis.getVoices();
+        const ut = new SpeechSynthesisUtterance(text);
+        
+        const findVoice = () => {
+            if (specialty === "code" || specialty === "data") {
+                ut.voice = voices.find(v => (v.name.includes("Male") || v.name.includes("David") || v.name.includes("James")) && v.lang.startsWith("en")) || null;
+            } else {
+                ut.voice = voices.find(v => (v.name.includes("Female") || v.name.includes("Zira") || v.name.includes("Google US English") || v.name.includes("Google UK English Female")) && v.lang.startsWith("en")) || null;
+            }
+            ut.pitch = specialty === "code" ? 0.85 : 1.15;
+            ut.rate = 1.05;
+            window.speechSynthesis.speak(ut);
+        };
+
+        if (voices.length === 0) {
+            window.speechSynthesis.onvoiceschanged = () => {
+                voices = window.speechSynthesis.getVoices();
+                findVoice();
+                window.speechSynthesis.onvoiceschanged = null;
+            };
+        } else {
+            findVoice();
+        }
+    }, []);
 
     const saveCustomAgent = useCallback(() => {
         if (!newAgent.name || !newAgent.description) return;

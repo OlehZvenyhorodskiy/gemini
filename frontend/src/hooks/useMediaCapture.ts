@@ -212,10 +212,13 @@ export function useMediaCapture(
                 const ratio = Math.min(768 / vw, 768 / vh);
                 const drawW = Math.round(vw * ratio);
                 const drawH = Math.round(vh * ratio);
-                canvas.width = drawW;
-                canvas.height = drawH;
+                
+                if (canvas.width !== drawW || canvas.height !== drawH) {
+                    canvas.width = drawW;
+                    canvas.height = drawH;
+                }
 
-                ctx.drawImage(video, 0, 0, drawW, drawH);
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
                 const dataUrl = canvas.toDataURL("image/jpeg", 0.7);
                 const base64 = dataUrl.split(",")[1];
                 if (base64) {
@@ -237,9 +240,8 @@ export function useMediaCapture(
             const isHighFpsMode = mode === "navigator" || mode === "security";
             const stream = await navigator.mediaDevices.getUserMedia({
                 video: {
-                    width: { ideal: isHighFpsMode ? 1280 : 1280 },
-                    height: { ideal: isHighFpsMode ? 720 : 720 },
-                    frameRate: { ideal: isHighFpsMode ? 15 : 5, max: isHighFpsMode ? 30 : 10 },
+                    width: { ideal: 1280 },
+                    height: { ideal: 720 },
                 },
             });
             // FIX: Set state FIRST so React renders <VideoPreview>,

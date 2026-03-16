@@ -191,30 +191,17 @@ export function useAudioEngine(): UseAudioEngineReturn {
         audioQueueRef.current = [];
         isPlayingRef.current = false;
 
-        if (playbackCtxRef.current) {
+        if (playbackCtxRef.current && playbackCtxRef.current.state === 'running') {
             try {
+                // Мгновенно останавливаем текущее воспроизведение
                 playbackCtxRef.current.suspend().then(() => {
-                    playbackCtxRef.current?.close().then(() => {
-                        // Recreate context + gain + analyser as a fresh chain
-                        const ctx = new AudioContext({ sampleRate: PLAYBACK_SAMPLE_RATE });
-                        playbackCtxRef.current = ctx;
-                        
-                        const gain = ctx.createGain();
-                        gain.gain.value = 1.0;
-                        gainNodeRef.current = gain;
-                        
-                        const analyser = ctx.createAnalyser();
-                        analyser.fftSize = 2048;
-                        analyser.smoothingTimeConstant = 0.92;
-                        
-                        gain.connect(analyser);
-                        analyser.connect(ctx.destination);
-                        outputAnalyserRef.current = analyser;
-                        nextPlayTimeRef.current = 0;
-                    });
+                    // Сбрасываем время для следующих чанков
+                    nextPlayTimeRef.current = 0;
+                    // Возобновляем контекст, чтобы он был готов к новому аудио
+                    playbackCtxRef.current?.resume();
                 });
             } catch (e) {
-                console.error("Failed to reset AudioContext on barge-in", e);
+                console.error("Failed to suspend AudioContext on barge-in", e);
             }
         }
     }, []);
