@@ -148,14 +148,17 @@ export function useMediaCapture(
         videoStreamRef.current = stream;
 
         // FIX: Wait for React to render <VideoPreview> before attaching stream.
-        // Without this delay, videoRef.current is null because the <video> element
-        // only appears in the DOM after setIsCameraOn(true) triggers a re-render.
-        setTimeout(() => {
+        // We poll using requestAnimationFrame instead of an arbitrary setTimeout
+        // to ensure we attach as soon as the <video> element exists.
+        const attachVideo = () => {
             if (videoRef.current) {
                 videoRef.current.srcObject = stream;
                 videoRef.current.play().catch(e => console.error("Video play error:", e));
+            } else {
+                requestAnimationFrame(attachVideo);
             }
-        }, 50);
+        };
+        attachVideo();
 
         const captureCanvas = document.createElement("canvas");
         captureCanvas.width = 1280;
@@ -197,6 +200,9 @@ export function useMediaCapture(
 
             try {
                 const video = videoRef.current;
+                // Wait for video data to be ready (at least HAVE_CURRENT_DATA)
+                if (video.readyState < 2) return; 
+
                 const canvas = videoCaptureCanvasRef.current;
                 const ctx = canvas.getContext("2d");
                 if (!ctx) return;

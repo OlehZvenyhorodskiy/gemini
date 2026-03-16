@@ -8,12 +8,7 @@ import { useRef, useCallback } from "react";
  */
 const PLAYBACK_SAMPLE_RATE = 24000;
 
-/**
- * Crossfade duration in samples — blends the junction between
- * consecutive audio chunks to eliminate clicks/pops at boundaries.
- * 64 samples at 24kHz = ~2.7ms, imperceptible but effective.
- */
-const CROSSFADE_SAMPLES = 128;
+
 
 export type AudioQueueItem =
     | { type: "audio"; buffer: ArrayBuffer }
@@ -63,7 +58,6 @@ export function useAudioEngine(): UseAudioEngineReturn {
     const nextPlayTimeRef = useRef(0);
     const outputAnalyserRef = useRef<AnalyserNode | null>(null);
     const gainNodeRef = useRef<GainNode | null>(null);
-    const lastChunkTailRef = useRef<Float32Array | null>(null);
 
     /**
      * Lazily creates the AudioContext, GainNode, and AnalyserNode on first use.
@@ -95,28 +89,7 @@ export function useAudioEngine(): UseAudioEngineReturn {
         return playbackCtxRef.current;
     }, []);
 
-    /**
-     * Apply a short crossfade at the start of a chunk using the
-     * tail of the previous chunk. This eliminates the click/pop
-     * artifacts that occur at buffer boundaries.
-     */
-    const applyCrossfade = useCallback((samples: Float32Array): Float32Array => {
-        const prevTail = lastChunkTailRef.current;
-        if (!prevTail || prevTail.length === 0) return samples;
 
-        const fadeLen = Math.min(CROSSFADE_SAMPLES, samples.length, prevTail.length);
-        const result = new Float32Array(samples);
-        
-        for (let i = 0; i < fadeLen; i++) {
-            const t = i / fadeLen; // 0 → 1
-            // Smooth cosine crossfade
-            const fadeOut = 0.5 * (1 + Math.cos(Math.PI * t));
-            const fadeIn = 1 - fadeOut;
-            result[i] = prevTail[prevTail.length - fadeLen + i] * fadeOut + samples[i] * fadeIn;
-        }
-
-        return result;
-    }, []);
 
     /**
      * Decode base64 PCM audio chunk and queue for playback.
@@ -152,7 +125,6 @@ export function useAudioEngine(): UseAudioEngineReturn {
         (onImage: (data: string, mime: string) => void) => {
             if (audioQueueRef.current.length === 0) {
                 isPlayingRef.current = false;
-                lastChunkTailRef.current = null;
                 return;
             }
 
@@ -166,36 +138,14 @@ export function useAudioEngine(): UseAudioEngineReturn {
                 return;
             }
 
-            const rawBuffer = item.buffer;
-            const int16Data = new Int16Array(rawBuffer);
+            const int16Data = new Int16Array(item.buffer);
             const float32Data = new Float32Array(int16Data.length);
-            
-            // DC offset removal + soft clipping to prevent hissing/distortion
-            let dcSum = 0;
             for (let i = 0; i < int16Data.length; i++) {
-                dcSum += int16Data[i];
-            }
-            const dcOffset = dcSum / int16Data.length / 32768.0;
-            
-            for (let i = 0; i < int16Data.length; i++) {
-                let sample = int16Data[i] / 32768.0 - dcOffset;
-                // Soft clipping: tanh-based limiter prevents harsh digital clipping
-                if (Math.abs(sample) > 0.95) {
-                    sample = Math.tanh(sample);
-                }
-                float32Data[i] = sample;
+                float32Data[i] = int16Data[i] / 32768.0;
             }
 
-            // Apply crossfade with previous chunk's tail
-            const processedData = applyCrossfade(float32Data);
-            
-            // Save the tail of this chunk for the next crossfade
-            if (float32Data.length > CROSSFADE_SAMPLES) {
-                lastChunkTailRef.current = float32Data.slice(-CROSSFADE_SAMPLES);
-            }
-
-            const audioBuffer = ctx.createBuffer(1, processedData.length, PLAYBACK_SAMPLE_RATE);
-            audioBuffer.copyToChannel(new Float32Array(processedData.buffer as ArrayBuffer), 0);
+            const audioBuffer = ctx.createBuffer(1, float32Data.length, PLAYBACK_SAMPLE_RATE);
+            audioBuffer.getChannelData(0).set(float32Data);
 
             const source = ctx.createBufferSource();
             source.buffer = audioBuffer;
@@ -216,7 +166,7 @@ export function useAudioEngine(): UseAudioEngineReturn {
 
             source.onended = () => playNextChunkInternal(onImage);
         },
-        [ensureContext, applyCrossfade]
+        [ensureContext]
     );
 
     /**
@@ -240,7 +190,6 @@ export function useAudioEngine(): UseAudioEngineReturn {
     const flushAudio = useCallback(() => {
         audioQueueRef.current = [];
         isPlayingRef.current = false;
-        lastChunkTailRef.current = null;
 
         if (playbackCtxRef.current) {
             try {
