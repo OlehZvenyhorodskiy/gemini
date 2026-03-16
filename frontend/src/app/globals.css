@@ -3429,11 +3429,11 @@ html.btn-style-ios-glass .btn:hover {
   animation: msg-slide-in 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.message-wrapper.justify-end {
+.justify-end {
   justify-content: flex-end;
 }
 
-.message-wrapper.justify-start {
+.justify-start {
   justify-content: flex-start;
 }
 
@@ -3441,9 +3441,10 @@ html.btn-style-ios-glass .btn:hover {
 .message-row {
   display: flex;
   gap: 10px;
-  max-width: 75%;
-  margin-bottom: 12px;
-  will-change: auto;
+  max-width: 85%;
+  animation: msg-slide-in 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform, opacity;
+  contain: content;
 }
 
 .message-row.user {

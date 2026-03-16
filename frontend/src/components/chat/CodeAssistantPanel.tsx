@@ -13,7 +13,10 @@ import {
     Check,
     Loader2,
     MessageSquare,
-    Terminal
+    Terminal,
+    Monitor,
+    Columns,
+    Code
 } from "lucide-react";
 import { SimpleMarkdown } from "@/components/ui/SimpleMarkdown";
 import type { ChatMessage } from "@/hooks";
@@ -58,7 +61,8 @@ export function CodeAssistantPanel({ mode, messages, onClose, wsRef, addMessage 
     const [isRunning, setIsRunning] = useState(false);
     const [selectedLine, setSelectedLine] = useState<number | null>(null);
     const [isResizing, setIsResizing] = useState(false);
-    const [panelWidth, setPanelWidth] = useState(500); // Default width in pixels
+    const [viewMode, setViewMode] = useState<'code' | 'split' | 'preview'>('split');
+    const [panelWidth, setPanelWidth] = useState(800); // Default width wider for split view
     const editorRef = useRef<HTMLTextAreaElement>(null);
     const lineNumbersRef = useRef<HTMLDivElement>(null);
     const sidebarRef = useRef<HTMLDivElement>(null);
@@ -311,64 +315,87 @@ export function CodeAssistantPanel({ mode, messages, onClose, wsRef, addMessage 
                 )}
             </div>
 
-            {/* Main Area — Always a code editor with line numbers */}
-            <div className="code-panel-body">
+            {/* Main Area — Split View Architecture */}
+            <div className="code-panel-body" style={{ flexDirection: viewMode === 'split' ? 'row' : 'column' }}>
                 {activeFile ? (
                     <>
-                        {/* Editor with Line Numbers — always visible */}
-                        <div className="code-editor-container">
-                            {isLoading ? (
-                                <div className="code-loading">
-                                    <Loader2 className="animate-spin text-[var(--google-blue)]" size={32} />
-                                    <p>Fetching project source...</p>
-                                </div>
-                            ) : (
-                                <div className="code-editor-with-lines">
-                                    {/* Line numbers — always visible */}
-                                    <div 
-                                        ref={lineNumbersRef}
-                                        className="code-line-numbers"
-                                    >
-                                        {Array.from({ length: lineCount }, (_, i) => (
-                                            <button
-                                                key={i + 1}
-                                                className={`code-line-number ${selectedLine === i + 1 ? 'selected' : ''}`}
-                                                onClick={() => handleLineClick(i + 1)}
-                                                title={`Ask AI about line ${i + 1}`}
-                                            >
-                                                {i + 1}
-                                            </button>
-                                        ))}
+                        {/* Editor Column */}
+                        {(viewMode === 'code' || viewMode === 'split') && (
+                            <div className="code-editor-container" style={{ flex: viewMode === 'split' ? 1 : 'auto', width: viewMode === 'split' ? '50%' : '100%', display: 'flex', flexDirection: 'column' }}>
+                                {isLoading ? (
+                                    <div className="code-loading">
+                                        <Loader2 className="animate-spin text-[var(--google-blue)]" size={32} />
+                                        <p>Fetching project source...</p>
                                     </div>
-                                    {/* Editable textarea — always in edit mode */}
-                                    <textarea
-                                        ref={editorRef}
-                                        value={editContent}
-                                        onChange={(e) => setEditContent(e.target.value)}
-                                        onScroll={handleEditorScroll}
-                                        onKeyDown={handleEditorKeyDown}
-                                        className="code-editor-textarea"
-                                        spellCheck={false}
-                                        wrap="off"
-                                    />
-                                </div>
-                            )}
-                        </div>
+                                ) : (
+                                    <div className="code-editor-with-lines" style={{ flex: 1, height: 'auto', overflow: 'hidden' }}>
+                                        {/* Line numbers — always visible */}
+                                        <div 
+                                            ref={lineNumbersRef}
+                                            className="code-line-numbers"
+                                        >
+                                            {Array.from({ length: lineCount }, (_, i) => (
+                                                <button
+                                                    key={i + 1}
+                                                    className={`code-line-number ${selectedLine === i + 1 ? 'selected' : ''}`}
+                                                    onClick={() => handleLineClick(i + 1)}
+                                                    title={`Ask AI about line ${i + 1}`}
+                                                >
+                                                    {i + 1}
+                                                </button>
+                                            ))}
+                                        </div>
+                                        {/* Editable textarea — always in edit mode */}
+                                        <textarea
+                                            ref={editorRef}
+                                            value={editContent}
+                                            onChange={(e) => setEditContent(e.target.value)}
+                                            onScroll={handleEditorScroll}
+                                            onKeyDown={handleEditorKeyDown}
+                                            className="code-editor-textarea"
+                                            spellCheck={false}
+                                            wrap="off"
+                                        />
+                                    </div>
+                                )}
 
-                        {/* Run Output Panel */}
-                        {runOutput !== null && (
-                            <div className="code-run-output">
-                                <div className="code-run-output-header">
-                                    <Terminal size={14} />
-                                    <span>Output</span>
-                                    <button 
-                                        onClick={() => setRunOutput(null)}
-                                        className="code-run-output-close"
-                                    >
-                                        <X size={12} />
-                                    </button>
-                                </div>
-                                <pre className="code-run-output-content">{runOutput}</pre>
+                                {/* Run Output Panel */}
+                                {runOutput !== null && (
+                                    <div className="code-run-output">
+                                        <div className="code-run-output-header">
+                                            <Terminal size={14} />
+                                            <span>Output</span>
+                                            <button 
+                                                onClick={() => setRunOutput(null)}
+                                                className="code-run-output-close"
+                                            >
+                                                <X size={12} />
+                                            </button>
+                                        </div>
+                                        <pre className="code-run-output-content">{runOutput}</pre>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* Live Render Column (HTML/Preview) */}
+                        {(viewMode === 'preview' || viewMode === 'split') && (activeFile?.endsWith('.html') || editContent.includes('<html') || editContent.includes('<!DOCTYPE')) && (
+                            <div className="code-preview-container" style={{ 
+                                flex: viewMode === 'split' ? 1 : 'auto', 
+                                width: viewMode === 'split' ? '50%' : '100%',
+                                borderLeft: viewMode === 'split' ? '1px solid var(--border-primary)' : 'none',
+                                background: '#ffffff',
+                                position: 'relative',
+                                display: 'flex',
+                                flexDirection: 'column'
+                            }}>
+                                <iframe 
+                                    srcDoc={isEditing ? editContent : fileContent} 
+                                    className="w-full h-full border-0" 
+                                    sandbox="allow-scripts allow-modals allow-same-origin allow-forms" 
+                                    title="Live Preview" 
+                                    style={{ flex: 1, width: '100%', height: '100%', background: 'white', color: 'black' }}
+                                />
                             </div>
                         )}
                     </>
@@ -423,6 +450,30 @@ export function CodeAssistantPanel({ mode, messages, onClose, wsRef, addMessage 
                         </span>
                     )}
                 </div>
+
+                {activeFile && (activeFile.endsWith('.html') || editContent.includes('<html')) && (
+                    <div className="code-panel-footer-view-toggle" style={{ display: 'flex', gap: '4px', background: 'var(--bg-secondary)', padding: '2px', borderRadius: '6px', border: '1px solid var(--border-primary)' }}>
+                        <button 
+                            onClick={() => setViewMode('code')} 
+                            className={`code-footer-icon-btn ${viewMode === 'code' ? 'active' : ''}`}
+                            style={{ padding: '4px 8px', borderRadius: '4px', color: viewMode === 'code' ? 'var(--google-blue)' : 'var(--text-tertiary)', background: viewMode === 'code' ? 'rgba(66, 133, 244, 0.1)' : 'transparent' }}
+                            title="Code Only"
+                        ><Code size={14} /></button>
+                        <button 
+                            onClick={() => setViewMode('split')} 
+                            className={`code-footer-icon-btn ${viewMode === 'split' ? 'active' : ''}`}
+                            style={{ padding: '4px 8px', borderRadius: '4px', color: viewMode === 'split' ? 'var(--google-blue)' : 'var(--text-tertiary)', background: viewMode === 'split' ? 'rgba(66, 133, 244, 0.1)' : 'transparent' }}
+                            title="Split View"
+                        ><Columns size={14} /></button>
+                        <button 
+                            onClick={() => setViewMode('preview')} 
+                            className={`code-footer-icon-btn ${viewMode === 'preview' ? 'active' : ''}`}
+                            style={{ padding: '4px 8px', borderRadius: '4px', color: viewMode === 'preview' ? 'var(--google-blue)' : 'var(--text-tertiary)', background: viewMode === 'preview' ? 'rgba(66, 133, 244, 0.1)' : 'transparent' }}
+                            title="Preview Only"
+                        ><Monitor size={14} /></button>
+                    </div>
+                )}
+
                 <div className="code-panel-footer-actions">
                     <button 
                         onClick={handleCopy}
@@ -435,7 +486,7 @@ export function CodeAssistantPanel({ mode, messages, onClose, wsRef, addMessage 
                     </button>
                     <button 
                         onClick={handleRunCode}
-                        disabled={isRunning || !activeFile}
+                        disabled={isRunning || !activeFile || (activeFile.endsWith('.html') && !editContent.includes('python'))}
                         className="code-footer-btn run"
                         title="Run code"
                     >
