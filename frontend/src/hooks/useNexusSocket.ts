@@ -105,6 +105,8 @@ export function useNexusSocket(
 
     const wsRef = useRef<WebSocket | null>(null);
     const isIntentionalDisconnectRef = useRef(false);
+    const sessionStartTimeRef = useRef(Date.now());
+    const isRotatingRef = useRef(false);
 
     // Debounce rapid state flickers (listening → thinking → listening in <100ms)
     const agentStateTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -156,7 +158,12 @@ export function useNexusSocket(
                 if (msg.mode) setMode(msg.mode as AgentMode);
 
                 if (msg.state === "listening" || msg.state === "interrupted") {
-                    // Audio engine handles queue flushing via onServerMessage
+                    // Check if we need to rotate the session (every 100s during a pause)
+                    const sessionAge = Date.now() - sessionStartTimeRef.current;
+                    if (msg.state === "listening" && sessionAge > 100000 && !isRotatingRef.current) {
+                        console.log("🔄 Acoustic context age > 100s. Rotating session to prevent hissing...");
+                        rotateSession();
+                    }
                 }
 
                 // Backend-detected barge-in
@@ -276,10 +283,15 @@ export function useNexusSocket(
 
         ws.onopen = () => {
             isIntentionalDisconnectRef.current = false;
+            isRotatingRef.current = false;
+            sessionStartTimeRef.current = Date.now();
             reconnectAttemptRef.current = 0; // Reset backoff on success
             setIsConnected(true);
             setAgentState("listening");
-            addSystemMessage("Connected to NEXUS. Ready to go.");
+            
+            if (!isRotatingRef.current) {
+                addSystemMessage("Connected to NEXUS. Ready to go.");
+            }
 
             ws.send(JSON.stringify({
                 type: "config",
@@ -325,13 +337,26 @@ export function useNexusSocket(
         setTextInput("");
     }, [textInput, addMessage]);
 
-    const switchMode = useCallback((newMode: AgentMode) => {
+    const switchMode = useCallback((newMode: AgentMode, silent = false) => {
         setMode(newMode);
-        setMessages([]);
+        if (!silent) setMessages([]);
         if (wsRef.current?.readyState === WebSocket.OPEN) {
             wsRef.current.send(JSON.stringify({ type: "mode", mode: newMode }));
         }
     }, []);
+
+    const rotateSession = useCallback(() => {
+        if (isRotatingRef.current) return;
+        isRotatingRef.current = true;
+        sessionStartTimeRef.current = Date.now();
+        
+        if (wsRef.current?.readyState === WebSocket.OPEN) {
+            // Re-sending same mode in backend triggers LiveConnection recreation
+            // which clears the acoustic context hissing.
+            wsRef.current.send(JSON.stringify({ type: "mode", mode: mode }));
+            setTimeout(() => { isRotatingRef.current = false; }, 2000);
+        }
+    }, [mode]);
 
     const disconnectWebSocket = useCallback(() => {
         isIntentionalDisconnectRef.current = true;

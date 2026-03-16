@@ -145,7 +145,18 @@ export function useAudioEngine(): UseAudioEngineReturn {
             }
 
             const audioBuffer = ctx.createBuffer(1, float32Data.length, PLAYBACK_SAMPLE_RATE);
-            audioBuffer.getChannelData(0).set(float32Data);
+            const channelData = audioBuffer.getChannelData(0);
+            channelData.set(float32Data);
+
+            // --- De-clicking: Linear fade-in/out at boundaries ---
+            // 5ms fade is enough to kill the "pop" without losing audible speech bits
+            const fadeLength = Math.floor(PLAYBACK_SAMPLE_RATE * 0.005); 
+            if (channelData.length > fadeLength * 2) {
+                for (let i = 0; i < fadeLength; i++) {
+                    channelData[i] *= (i / fadeLength); // Fade in
+                    channelData[channelData.length - 1 - i] *= (i / fadeLength); // Fade out
+                }
+            }
 
             const source = ctx.createBufferSource();
             source.buffer = audioBuffer;
