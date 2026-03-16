@@ -94,22 +94,30 @@ export function CodeAssistantPanel({ mode, messages, onClose, wsRef, addMessage 
         }
 
         // Priority 2: Markdown code blocks in the latest agent message
+        // Search ALL agent text messages (not just ones containing ```)
+        // because during streaming the closing ``` may not have arrived yet
         const lastAgentMsg = [...messages].reverse().find(
-            m => m.role === "agent" && m.type === "text" && m.content.includes("```")
+            m => m.role === "agent" && m.type === "text"
         );
 
-        if (lastAgentMsg) {
-            // More robust regex: accepts space before/after, optional newline, streams better
-            // Matches: ```lang [code] ``` or ```lang\n [code]\n ```
-            const match = lastAgentMsg.content.match(/```(?:\w+)?\n?([\s\S]*?)(?:```|$)/);
-            if (match && match[1].trim()) {
-                const code = match[1];
-                // Try to infer language if possible
-                const langMatch = lastAgentMsg.content.match(/```(\w+)/);
-                const lang = langMatch ? langMatch[1] : "ts";
+        if (lastAgentMsg && lastAgentMsg.content.includes("```")) {
+            // Global regex: find ALL code blocks, even unclosed ones (streaming)
+            const codeBlockRegex = /```(\w+)?\n([\s\S]*?)(?:```|$)/g;
+            let match;
+            let lastMatch = null;
+            
+            // Iterate to get the LAST code block in the message
+            while ((match = codeBlockRegex.exec(lastAgentMsg.content)) !== null) {
+                lastMatch = match;
+            }
+
+            if (lastMatch && lastMatch[2].trim()) {
+                const lang = lastMatch[1] || "txt";
+                const code = lastMatch[2];
                 
                 setActiveFile(`snippet.${lang}`);
                 setFileContent(code);
+                // Always update editor content in real-time during streaming
                 setEditContent(code);
             }
         }
@@ -179,10 +187,8 @@ export function CodeAssistantPanel({ mode, messages, onClose, wsRef, addMessage 
         setTimeout(() => setCopied(false), 2000);
     }, [isEditing, editContent, fileContent]);
 
-    // Run code via WebSocket
-    const handleRunCode = useCallback(() => {
-        if (!wsRef?.current || wsRef.current.readyState !== WebSocket.OPEN) return;
-        
+    // Run code via direct API call (bypasses LLM for deterministic execution)
+    const handleRunCode = useCallback(async () => {
         const code = isEditing ? editContent : fileContent;
         if (!code.trim()) return;
         
@@ -190,18 +196,39 @@ export function CodeAssistantPanel({ mode, messages, onClose, wsRef, addMessage 
         setRunOutput(null);
         
         const lang = getFileLang(activeFile || "snippet.py");
-        
-        // Send as a text message asking to run the code
-        const runPrompt = `Please execute this ${lang} code and show me the output:\n\`\`\`${lang}\n${code}\n\`\`\``;
-        
-        if (addMessage) {
-            addMessage("user", "text", runPrompt);
+
+        try {
+            // Call the direct execution endpoint — no LLM involved
+            const baseUrl = window.location.protocol + "//" + window.location.host;
+            // Handle local dev (frontend on :3000, backend on :8080)
+            const apiUrl = baseUrl.includes("3000") 
+                ? "http://localhost:8080/api/execute" 
+                : `${baseUrl}/api/execute`;
+
+            const response = await fetch(apiUrl, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ code, language: lang })
+            });
+
+            const result = await response.json();
+            
+            if (result.error) {
+                setRunOutput(`❌ Error:\n${result.error}`);
+            } else {
+                const out = result.stdout || "";
+                const err = result.stderr ? `\n⚠️ Warnings/Errors:\n${result.stderr}` : "";
+                const exitCode = result.exit_code !== undefined 
+                    ? `\n\n[Process exited with code ${result.exit_code}]` 
+                    : "";
+                setRunOutput(out + err + exitCode || "Execution completed with no output.");
+            }
+        } catch (e) {
+            setRunOutput(`❌ Connection Error:\nFailed to execute code. Is the backend running?`);
+        } finally {
+            setIsRunning(false);
         }
-        wsRef.current.send(JSON.stringify({ type: "text", content: runPrompt }));
-        
-        // Auto-stop running indicator after timeout
-        setTimeout(() => setIsRunning(false), 15000);
-    }, [wsRef, addMessage, isEditing, editContent, fileContent, activeFile]);
+    }, [isEditing, editContent, fileContent, activeFile]);
 
     // Ask about a specific line
     const handleLineClick = useCallback((lineNum: number) => {

@@ -159,6 +159,29 @@ async def get_user_profile(user_id: str) -> JSONResponse:
     return JSONResponse(content={"user_id": user_id, "facts": facts})
 
 
+# ---------------------------------------------------------------------------
+# Direct Code Execution Endpoint — bypasses LLM for deterministic results
+# ---------------------------------------------------------------------------
+from pydantic import BaseModel
+from backend.tools.code_engine import CodeEngine
+
+class ExecuteRequest(BaseModel):
+    code: str
+    language: str = "python"
+
+# Singleton engine instance for direct code execution
+_direct_code_engine = CodeEngine()
+
+@app.post("/api/execute")
+async def execute_code_endpoint(req: ExecuteRequest) -> JSONResponse:
+    """
+    Direct code execution endpoint — runs Python/JS code without
+    going through Gemini. Used by the Code Assistant panel's "Run" button.
+    """
+    result = await _direct_code_engine.execute_code(req.code, req.language)
+    return JSONResponse(content=result)
+
+
 async def _handle_mode(
     session_manager: SessionManager, session_id: str, message: ClientModeMessage
 ) -> None:

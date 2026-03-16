@@ -146,10 +146,16 @@ export function useMediaCapture(
 
     const startVideoCapture = useCallback((stream: MediaStream) => {
         videoStreamRef.current = stream;
-        if (videoRef.current) {
-            videoRef.current.srcObject = stream;
-            videoRef.current.play().catch(e => console.error("Video play error:", e));
-        }
+
+        // FIX: Wait for React to render <VideoPreview> before attaching stream.
+        // Without this delay, videoRef.current is null because the <video> element
+        // only appears in the DOM after setIsCameraOn(true) triggers a re-render.
+        setTimeout(() => {
+            if (videoRef.current) {
+                videoRef.current.srcObject = stream;
+                videoRef.current.play().catch(e => console.error("Video play error:", e));
+            }
+        }, 50);
 
         const captureCanvas = document.createElement("canvas");
         captureCanvas.width = 1280;
@@ -230,13 +236,15 @@ export function useMediaCapture(
                     frameRate: { ideal: isHighFpsMode ? 15 : 5, max: isHighFpsMode ? 30 : 10 },
                 },
             });
-            startVideoCapture(stream);
+            // FIX: Set state FIRST so React renders <VideoPreview>,
+            // THEN attach the stream (startVideoCapture has a 50ms delay)
             setIsCameraOn(true);
+            startVideoCapture(stream);
         } catch (err) {
             console.error("Camera access denied:", err);
             addSystemMessage("⚠️ Camera access denied.");
         }
-    }, [isCameraOn, stopVideoCapture, startVideoCapture, addSystemMessage]);
+    }, [isCameraOn, stopVideoCapture, startVideoCapture, addSystemMessage, mode]);
 
     const toggleScreenShare = useCallback(async () => {
         if (isScreenSharing) { stopVideoCapture(); return; }
@@ -250,13 +258,15 @@ export function useMediaCapture(
                 },
             });
             stream.getVideoTracks()[0].addEventListener("ended", () => stopVideoCapture());
-            startVideoCapture(stream);
+            // FIX: Set state FIRST so React renders <VideoPreview>,
+            // THEN attach the stream (startVideoCapture has a 50ms delay)
             setIsScreenSharing(true);
+            startVideoCapture(stream);
         } catch (err) {
             console.error("Screen share denied:", err);
             addSystemMessage("⚠️ Screen share denied or cancelled.");
         }
-    }, [isScreenSharing, stopVideoCapture, startVideoCapture, addSystemMessage]);
+    }, [isScreenSharing, stopVideoCapture, startVideoCapture, addSystemMessage, mode]);
 
     // ---- Audio input visualizer with VAD ----
     const startVisualizer = useCallback(() => {

@@ -17,8 +17,14 @@ ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
-# Install system deps — Playwright's Chromium needs these to run headless
-RUN apt-get update && apt-get install -y --no-install-recommends \
+# Install system deps:
+# - curl: needed by nodesource installer
+# - Node.js 20.x: required by CodeEngine to execute JavaScript code
+# - Playwright Chromium libs: headless browser for web scraping tools
+RUN apt-get update && apt-get install -y --no-install-recommends curl \
+    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y --no-install-recommends \
+    nodejs \
     gcc \
     libnss3 libnspr4 libdbus-1-3 libatk1.0-0 libatk-bridge2.0-0 \
     libcups2 libdrm2 libxkbcommon0 libatspi2.0-0 libxcomposite1 \
