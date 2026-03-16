@@ -285,95 +285,46 @@ export function CodeAssistantPanel({ mode, messages, onClose, wsRef, addMessage 
                 </div>
             )}
             <div style={{ direction: "ltr", display: "flex", flexDirection: "column", height: "100%", width: "100%", position: "relative" }}>
-            {/* Header */}
+            {/* Minimal Header — just file info */}
             <div className="code-panel-header">
                 <div className="code-panel-title-group">
                     <div className="code-panel-icon">
                         <Code2 size={20} />
                     </div>
                     <div>
-                        <h3 className="code-panel-title">Code Workspace</h3>
+                        <h3 className="code-panel-title">{activeFile || "Code Workspace"}</h3>
                         <div className="code-panel-status">
                             <span className="code-panel-status-dot" />
-                            <p className="code-panel-status-text">Live Context Active</p>
+                            <p className="code-panel-status-text">
+                                {activeFile ? `${getFileLang(activeFile).toUpperCase()} · ${lineCount} lines` : 'No file'}
+                            </p>
                         </div>
                     </div>
                 </div>
-                <div className="code-panel-actions">
+                {onClose && (
                     <button 
-                        onClick={() => setIsEditing(!isEditing)}
-                        className={`code-panel-btn ${!isEditing ? 'active' : ''}`}
+                        onClick={onClose}
+                        className="code-panel-icon-btn close"
                     >
-                        <FileCode size={14} />
-                        {isEditing ? 'Preview' : 'Edit'}
+                        <X size={16} />
                     </button>
-                    <button 
-                        onClick={handleCopy}
-                        className="code-panel-btn"
-                        title="Copy code"
-                    >
-                        {copied ? <Check size={14} /> : <Copy size={14} />}
-                        {copied ? 'Copied!' : 'Copy'}
-                    </button>
-                    <button 
-                        onClick={handleRunCode}
-                        disabled={isRunning || !activeFile}
-                        className="code-panel-btn run"
-                        title="Run code"
-                    >
-                        {isRunning ? <Loader2 size={14} className="animate-spin" /> : <Play size={14} />}
-                        {isRunning ? 'Running...' : 'Run'}
-                    </button>
-                    <div className="code-panel-separator" />
-                    <button 
-                        onClick={() => setIsExpanded(!isExpanded)}
-                        className="code-panel-icon-btn"
-                        title={isExpanded ? "Minimize" : "Maximize"}
-                    >
-                        {isExpanded ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
-                    </button>
-                    {onClose && (
-                        <button 
-                            onClick={onClose}
-                            className="code-panel-icon-btn close"
-                        >
-                            <X size={16} />
-                        </button>
-                    )}
-                </div>
+                )}
             </div>
 
-            {/* Main Area */}
+            {/* Main Area — Always a code editor with line numbers */}
             <div className="code-panel-body">
                 {activeFile ? (
                     <>
-                        {/* Tab Bar / Breadcrumbs */}
-                        <div className="code-panel-tab-bar">
-                            <div className="code-panel-tab">
-                                <FileCode size={14} className="text-blue-400" />
-                                <span className="code-panel-tab-name">
-                                    {activeFile}
-                                </span>
-                            </div>
-                            <div className="code-panel-tab-meta">
-                                <span>UTF-8</span>
-                                <span className="code-panel-tab-sep" />
-                                <span>{getFileLang(activeFile).toUpperCase()}</span>
-                                <span className="code-panel-tab-sep" />
-                                <span>{lineCount} lines</span>
-                            </div>
-                        </div>
-
-                        {/* Editor/Viewer with Line Numbers */}
+                        {/* Editor with Line Numbers — always visible */}
                         <div className="code-editor-container">
                             {isLoading ? (
                                 <div className="code-loading">
                                     <Loader2 className="animate-spin text-[var(--google-blue)]" size={32} />
                                     <p>Fetching project source...</p>
                                 </div>
-                            ) : isEditing ? (
+                            ) : (
                                 <div className="code-editor-with-lines">
-                                    {/* Line numbers */}
+                                    {/* Line numbers — always visible */}
                                     <div 
                                         ref={lineNumbersRef}
                                         className="code-line-numbers"
@@ -389,7 +340,7 @@ export function CodeAssistantPanel({ mode, messages, onClose, wsRef, addMessage 
                                             </button>
                                         ))}
                                     </div>
-                                    {/* Editor */}
+                                    {/* Editable textarea — always in edit mode */}
                                     <textarea
                                         ref={editorRef}
                                         value={editContent}
@@ -400,27 +351,6 @@ export function CodeAssistantPanel({ mode, messages, onClose, wsRef, addMessage 
                                         spellCheck={false}
                                         wrap="off"
                                     />
-                                </div>
-                            ) : (
-                                <div className="code-preview-container">
-                                    {/* Line numbers in preview */}
-                                    <div className="code-line-numbers preview">
-                                        {Array.from({ length: lineCount }, (_, i) => (
-                                            <button
-                                                key={i + 1}
-                                                className={`code-line-number ${selectedLine === i + 1 ? 'selected' : ''}`}
-                                                onClick={() => handleLineClick(i + 1)}
-                                                title={`Ask AI about line ${i + 1}`}
-                                            >
-                                                {i + 1}
-                                            </button>
-                                        ))}
-                                    </div>
-                                    <div className="code-preview-content">
-                                        <SimpleMarkdown 
-                                            content={`\`\`\`${getFileLang(activeFile)}\n${fileContent}\n\`\`\``} 
-                                        />
-                                    </div>
                                 </div>
                             )}
                         </div>
@@ -480,22 +410,45 @@ export function CodeAssistantPanel({ mode, messages, onClose, wsRef, addMessage 
                 )}
             </div>
 
-            {/* Footer / Status Bar */}
+            {/* Bottom Toolbar — all actions moved here */}
             <div className="code-panel-footer">
                 <div className="code-panel-footer-left">
                     <div className="code-panel-footer-status">
                         <div className="code-panel-status-dot" />
                         {isRunning ? 'RUNNING' : 'READY'}
                     </div>
-                    <span>UTF-8</span>
-                </div>
-                <div className="code-panel-footer-right">
                     {selectedLine && (
                         <span className="code-panel-footer-line">
-                            <MessageSquare size={10} /> Asking about Ln {selectedLine}
+                            <MessageSquare size={10} /> Ln {selectedLine}
                         </span>
                     )}
-                    <span>{lineCount} Lines</span>
+                </div>
+                <div className="code-panel-footer-actions">
+                    <button 
+                        onClick={handleCopy}
+                        className="code-footer-btn"
+                        title="Copy code"
+                        disabled={!activeFile}
+                    >
+                        {copied ? <Check size={13} /> : <Copy size={13} />}
+                        <span>{copied ? 'Copied' : 'Copy'}</span>
+                    </button>
+                    <button 
+                        onClick={handleRunCode}
+                        disabled={isRunning || !activeFile}
+                        className="code-footer-btn run"
+                        title="Run code"
+                    >
+                        {isRunning ? <Loader2 size={13} className="animate-spin" /> : <Play size={13} />}
+                        <span>{isRunning ? 'Running' : 'Run'}</span>
+                    </button>
+                    <button 
+                        onClick={() => setIsExpanded(!isExpanded)}
+                        className="code-footer-btn"
+                        title={isExpanded ? "Minimize" : "Maximize"}
+                    >
+                        {isExpanded ? <Minimize2 size={13} /> : <Maximize2 size={13} />}
+                    </button>
                 </div>
             </div>
             </div>

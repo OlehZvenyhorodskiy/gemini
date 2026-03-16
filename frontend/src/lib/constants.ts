@@ -51,21 +51,97 @@ export const MODE_INFO: Record<AgentMode, ModeInfo> = {
 
 export const ALL_MODES = Object.keys(MODE_INFO) as AgentMode[];
 
-export const MODE_SUGGESTIONS: Partial<Record<AgentMode, string[]>> = {
-    live: ["What's the weather looking like today?", "Help me brainstorm startup ideas", "Explain quantum computing simply", "What can you see through my camera?"],
-    creative: ["Write a sci-fi short story with images", "Create a marketing campaign for a coffee brand", "Generate a children's book about a space cat", "Design a movie poster concept"],
-    navigator: ["Help me navigate this website", "Find and click the settings button", "Fill out this form for me", "Take a screenshot and analyze it"],
-    code: ["Review this function for bugs", "Refactor this code to be cleaner", "Help me debug this error message", "Explain how this algorithm works"],
-    research: ["Research the latest AI model releases", "Compare React vs Vue for my project", "Find papers on renewable energy tech", "What are the best practices for API design?"],
-    language: ["Teach me how to order food in Japanese", "Practice a French conversation with me", "How do you say 'thank you' in 10 languages?", "Correct my Spanish pronunciation"],
-    data: ["Analyze the trend in this chart", "What does this pie chart tell us?", "Summarize the key metrics from this spreadsheet", "Find anomalies in my sales data"],
-    music: ["Explain the chord progression of Bohemian Rhapsody", "Write lyrics for a lo-fi hip hop track", "What key is this melody in?", "Design a song structure for a rock ballad"],
-    game: ["Start a fantasy RPG adventure", "I enter the ancient dungeon", "Create a cyberpunk mystery scenario", "I want to negotiate with the dragon"],
-    meeting: ["Summarize the key action items", "Who is responsible for what?", "What decisions were made?", "List all deadlines mentioned"],
-    security: ["Scan this page for vulnerabilities", "Is this URL suspicious?", "Check for exposed API keys in this code", "Analyze this login form for security flaws"],
-    fitness: ["Design a 4-day upper/lower split for me", "Check my squat form via camera", "What should I eat post-workout?", "Build me a 20-minute HIIT routine"],
-    travel: ["Plan a 5-day trip to Tokyo on a mid-range budget", "What do I need to know before visiting Morocco?", "Find the best flights to Barcelona next month", "What's the best time to visit Iceland?"],
-    debate: ["Let's debate whether AI will replace most jobs", "Argue for universal basic income — I'll argue against", "Is social media a net positive for society?", "Should college education be free?"],
+export interface ModeSuggestion {
+    icon: string;
+    label: string;
+    prompt: string;
+}
+
+export const MODE_SUGGESTIONS: Partial<Record<AgentMode, ModeSuggestion[]>> = {
+    live: [
+        { icon: "🌤️", label: "Check Weather", prompt: "What's the weather looking like today?" },
+        { icon: "💡", label: "Brainstorm Ideas", prompt: "Help me brainstorm startup ideas" },
+        { icon: "⚛️", label: "Explain Concepts", prompt: "Explain quantum computing simply" },
+        { icon: "👁️", label: "Analyze Camera", prompt: "What can you see through my camera?" }
+    ],
+    creative: [
+        { icon: "📚", label: "Sci-Fi Story", prompt: "Write a sci-fi short story with images" },
+        { icon: "🎨", label: "Marketing Campaign", prompt: "Create a marketing campaign for a coffee brand" },
+        { icon: "😸", label: "Children's Book", prompt: "Generate a children's book about a space cat" },
+        { icon: "🎬", label: "Movie Poster", prompt: "Design a movie poster concept" }
+    ],
+    navigator: [
+        { icon: "🧭", label: "Navigate Site", prompt: "Help me navigate this website" },
+        { icon: "🖱️", label: "Find Button", prompt: "Find and click the settings button" },
+        { icon: "📋", label: "Auto Fill Form", prompt: "Fill out this form for me" },
+        { icon: "📸", label: "Analyze Screen", prompt: "Take a screenshot and analyze it" }
+    ],
+    code: [
+        { icon: "📂", label: "Read structure", prompt: "Explain the project structure and list top level files" },
+        { icon: "🔍", label: "Analyze local code", prompt: "List files in the current directory and explain what they do" },
+        { icon: "🐍", label: "Write Python Logic", prompt: "Write a high-performance Python script that calculates prime numbers" },
+        { icon: "⚡", label: "Hello World", prompt: "Please write a Hello World program in Python. Provide only the code snippet so I can run it." }
+    ],
+    research: [
+        { icon: "🤖", label: "Latest AI Models", prompt: "Research the latest AI model releases" },
+        { icon: "⚖️", label: "Compare Frameworks", prompt: "Compare React vs Vue for my project" },
+        { icon: "🔋", label: "Renewable Tech", prompt: "Find papers on renewable energy tech" },
+        { icon: "📐", label: "API Best Practices", prompt: "What are the best practices for API design?" }
+    ],
+    language: [
+        { icon: "🍣", label: "Order in Japanese", prompt: "Teach me how to order food in Japanese" },
+        { icon: "🥐", label: "French Practice", prompt: "Practice a French conversation with me" },
+        { icon: "🌐", label: "Say Thank You", prompt: "How do you say 'thank you' in 10 languages?" },
+        { icon: "🗣️", label: "Correct Spanish", prompt: "Correct my Spanish pronunciation" }
+    ],
+    data: [
+        { icon: "📈", label: "Analyze Trend", prompt: "Analyze the trend in this chart" },
+        { icon: "🥧", label: "Chart Insights", prompt: "What does this pie chart tell us?" },
+        { icon: "📊", label: "Summarize Metrics", prompt: "Summarize the key metrics from this spreadsheet" },
+        { icon: "🚨", label: "Find Anomalies", prompt: "Find anomalies in my sales data" }
+    ],
+    music: [
+        { icon: "🎹", label: "Chord Progression", prompt: "Explain the chord progression of Bohemian Rhapsody" },
+        { icon: "🎧", label: "Lo-fi Lyrics", prompt: "Write lyrics for a lo-fi hip hop track" },
+        { icon: "🎼", label: "Identify Key", prompt: "What key is this melody in?" },
+        { icon: "🎸", label: "Song Structure", prompt: "Design a song structure for a rock ballad" }
+    ],
+    game: [
+        { icon: "🐉", label: "Start RPG", prompt: "Start a fantasy RPG adventure" },
+        { icon: "🏰", label: "Enter Dungeon", prompt: "I enter the ancient dungeon" },
+        { icon: "🌆", label: "Cyberpunk Mystery", prompt: "Create a cyberpunk mystery scenario" },
+        { icon: "🗣️", label: "Negotiate", prompt: "I want to negotiate with the dragon" }
+    ],
+    meeting: [
+        { icon: "📝", label: "Action Items", prompt: "Summarize the key action items" },
+        { icon: "👥", label: "Responsibilities", prompt: "Who is responsible for what?" },
+        { icon: "✅", label: "Decisions Made", prompt: "What decisions were made?" },
+        { icon: "⏰", label: "List Deadlines", prompt: "List all deadlines mentioned" }
+    ],
+    security: [
+        { icon: "🛡️", label: "Scan Page", prompt: "Scan this page for vulnerabilities" },
+        { icon: "🔗", label: "Check URL", prompt: "Is this URL suspicious?" },
+        { icon: "🔑", label: "Exposed Keys", prompt: "Check for exposed API keys in this code" },
+        { icon: "🔓", label: "Analyze Login", prompt: "Analyze this login form for security flaws" }
+    ],
+    fitness: [
+        { icon: "🏋️", label: "4-Day Split", prompt: "Design a 4-day upper/lower split for me" },
+        { icon: "🎥", label: "Check Squat Form", prompt: "Check my squat form via camera" },
+        { icon: "🍗", label: "Post-Workout Food", prompt: "What should I eat post-workout?" },
+        { icon: "⏱️", label: "HIIT Routine", prompt: "Build me a 20-minute HIIT routine" }
+    ],
+    travel: [
+        { icon: "🗼", label: "Tokyo Trip", prompt: "Plan a 5-day trip to Tokyo on a mid-range budget" },
+        { icon: "🐪", label: "Morocco Tips", prompt: "What do I need to know before visiting Morocco?" },
+        { icon: "✈️", label: "Barcelona Flights", prompt: "Find the best flights to Barcelona next month" },
+        { icon: "🧊", label: "Visit Iceland", prompt: "What's the best time to visit Iceland?" }
+    ],
+    debate: [
+        { icon: "🤖", label: "AI & Jobs", prompt: "Let's debate whether AI will replace most jobs" },
+        { icon: "💰", label: "Universal Income", prompt: "Argue for universal basic income — I'll argue against" },
+        { icon: "📱", label: "Social Media", prompt: "Is social media a net positive for society?" },
+        { icon: "🎓", label: "Free College", prompt: "Should college education be free?" }
+    ],
 };
 
 // ─── Custom Agent Type ─────────────────────────────────────────

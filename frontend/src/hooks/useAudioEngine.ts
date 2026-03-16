@@ -13,7 +13,7 @@ const PLAYBACK_SAMPLE_RATE = 24000;
  * consecutive audio chunks to eliminate clicks/pops at boundaries.
  * 64 samples at 24kHz = ~2.7ms, imperceptible but effective.
  */
-const CROSSFADE_SAMPLES = 64;
+const CROSSFADE_SAMPLES = 128;
 
 export type AudioQueueItem =
     | { type: "audio"; buffer: ArrayBuffer }
@@ -75,17 +75,17 @@ export function useAudioEngine(): UseAudioEngineReturn {
             const ctx = new AudioContext({ sampleRate: PLAYBACK_SAMPLE_RATE });
             playbackCtxRef.current = ctx;
 
-            // Gain node for level normalization — slight boost to
-            // counteract the typically quiet PCM output from the API
+            // Gain node — keep at 1.0 to avoid clipping/hissing.
+            // A value above 1.0 amplifies the already-normalized PCM and causes distortion.
             const gain = ctx.createGain();
-            gain.gain.value = 1.15; // Gentle +1.2dB boost
+            gain.gain.value = 1.0;
             gainNodeRef.current = gain;
 
             // Analyser for the visualizer — 2048 FFT gives
             // 1024 frequency bins, enough for a smooth organic waveform
             const analyser = ctx.createAnalyser();
             analyser.fftSize = 2048;
-            analyser.smoothingTimeConstant = 0.85; // Smoother than 0.8
+            analyser.smoothingTimeConstant = 0.92; // Very smooth to avoid jitter
             
             // Wire: gain → analyser → destination
             gain.connect(analyser);
@@ -169,8 +169,21 @@ export function useAudioEngine(): UseAudioEngineReturn {
             const rawBuffer = item.buffer;
             const int16Data = new Int16Array(rawBuffer);
             const float32Data = new Float32Array(int16Data.length);
+            
+            // DC offset removal + soft clipping to prevent hissing/distortion
+            let dcSum = 0;
             for (let i = 0; i < int16Data.length; i++) {
-                float32Data[i] = int16Data[i] / 32768.0;
+                dcSum += int16Data[i];
+            }
+            const dcOffset = dcSum / int16Data.length / 32768.0;
+            
+            for (let i = 0; i < int16Data.length; i++) {
+                let sample = int16Data[i] / 32768.0 - dcOffset;
+                // Soft clipping: tanh-based limiter prevents harsh digital clipping
+                if (Math.abs(sample) > 0.95) {
+                    sample = Math.tanh(sample);
+                }
+                float32Data[i] = sample;
             }
 
             // Apply crossfade with previous chunk's tail
@@ -238,12 +251,12 @@ export function useAudioEngine(): UseAudioEngineReturn {
                         playbackCtxRef.current = ctx;
                         
                         const gain = ctx.createGain();
-                        gain.gain.value = 1.15;
+                        gain.gain.value = 1.0;
                         gainNodeRef.current = gain;
                         
                         const analyser = ctx.createAnalyser();
                         analyser.fftSize = 2048;
-                        analyser.smoothingTimeConstant = 0.85;
+                        analyser.smoothingTimeConstant = 0.92;
                         
                         gain.connect(analyser);
                         analyser.connect(ctx.destination);

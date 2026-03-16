@@ -234,16 +234,33 @@ export function useNexusSocket(
                 break;
             case "error":
                 addMessage("agent", "error", msg.message || "Unknown error");
+                if (msg.message?.includes("PERMISSION_DENIED") || msg.message?.includes("leaked") || msg.message?.includes("API key not valid")) {
+                    addSystemMessage("🛑 Fatal Auth Error: Connection halted. Please update your GOOGLE_API_KEY in the backend .env file and restart the server.");
+                    reconnectAttemptRef.current = 999; // Prevent rapid retries
+                    if (wsRef.current) wsRef.current.close();
+                }
                 break;
         }
     }, [onServerMessage, setDebouncedAgentState, addMessage, flushAudio]);
+    const reconnectAttemptRef = useRef(0);
 
     /**
      * Establish a WebSocket connection to the NEXUS backend.
      * Persists a user_id in localStorage for cross-session identity.
+     * Uses exponential backoff for reconnection (3s → 6s → 12s → max 30s).
      */
     const connectWebSocket = useCallback(() => {
-        if (wsRef.current?.readyState === WebSocket.OPEN) return;
+        // Clean up any existing connection first
+        if (wsRef.current) {
+            if (wsRef.current.readyState === WebSocket.OPEN) return;
+            // Remove event handlers to prevent ghost reconnects
+            wsRef.current.onclose = null;
+            wsRef.current.onerror = null;
+            wsRef.current.onmessage = null;
+            if (wsRef.current.readyState === WebSocket.CONNECTING) {
+                wsRef.current.close();
+            }
+        }
 
         let userId = localStorage.getItem("nexus_user_id");
         if (!userId) {
@@ -256,6 +273,7 @@ export function useNexusSocket(
         wsRef.current = ws;
 
         ws.onopen = () => {
+            reconnectAttemptRef.current = 0; // Reset backoff on success
             setIsConnected(true);
             setAgentState("listening");
             addSystemMessage("Connected to NEXUS. Ready to go.");
@@ -278,8 +296,14 @@ export function useNexusSocket(
         ws.onclose = () => {
             setIsConnected(false);
             setAgentState("disconnected");
-            addSystemMessage("Disconnected from NEXUS.");
-            setTimeout(() => connectWebSocket(), 3000);
+            
+            // Exponential backoff: 3s, 6s, 12s, 24s, capped at 30s
+            const attempt = reconnectAttemptRef.current;
+            const delay = Math.min(3000 * Math.pow(2, attempt), 30000);
+            reconnectAttemptRef.current = attempt + 1;
+            
+            addSystemMessage(`Connection lost. Retrying in ${Math.round(delay / 1000)}s...`);
+            setTimeout(() => connectWebSocket(), delay);
         };
 
         ws.onerror = (err) => {

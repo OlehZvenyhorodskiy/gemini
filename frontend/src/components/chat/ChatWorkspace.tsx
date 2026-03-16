@@ -174,14 +174,23 @@ export function ChatWorkspace({
                                     <p className="welcome-subtitle">
                                         {MODE_INFO[mode].description}
                                     </p>
-                                    <div className="suggestion-grid">
+                                    <div className="code-empty-hints" style={{ marginTop: "20px", maxWidth: "600px", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "12px", width: "100%" }}>
                                         {(MODE_SUGGESTIONS[mode] || MODE_SUGGESTIONS.live || []).map((s, i) => (
                                             <button
                                                 key={i}
-                                                className="suggestion-chip"
-                                                onClick={() => handleSuggestionClick(s)}
+                                                className="code-hint-card"
+                                                onClick={() => handleSuggestionClick(typeof s === 'string' ? s : s.prompt)}
+                                                style={{ textAlign: "left", display: "flex", alignItems: "center", gap: "12px", padding: "12px 16px" }}
                                             >
-                                                {s}
+                                                <span className="text-xl">{typeof s === 'string' ? '💡' : s.icon}</span>
+                                                <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+                                                    <span className="text-xs font-semibold" style={{ color: "var(--text-primary)" }}>
+                                                        {typeof s === 'string' ? s : s.label}
+                                                    </span>
+                                                    <span className="text-[10px]" style={{ color: "var(--text-tertiary)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: "160px" }}>
+                                                        {typeof s === 'string' ? '' : s.prompt}
+                                                    </span>
+                                                </div>
                                             </button>
                                         ))}
                                     </div>

@@ -3931,12 +3931,12 @@ html.btn-style-ios-glass .btn:hover {
   color: var(--text-primary);
 }
 
-/* Footer / Status bar */
+/* Footer / Status bar (Bottom Toolbar) */
 .code-panel-footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 4px 12px;
+  padding: 8px 12px;
   background: var(--bg-surface);
   border-top: 1px solid var(--border-primary);
   font-size: 0.6875rem;
@@ -3944,17 +3944,22 @@ html.btn-style-ios-glass .btn:hover {
   flex-shrink: 0;
 }
 
-.code-panel-footer-left,
-.code-panel-footer-right {
+.code-panel-footer-left {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+}
+
+.code-panel-footer-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .code-panel-footer-status {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   font-weight: 600;
@@ -3965,6 +3970,49 @@ html.btn-style-ios-glass .btn:hover {
   align-items: center;
   gap: 4px;
   color: var(--google-blue);
+  background: rgba(66, 133, 244, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.code-footer-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border: 1px solid var(--border-primary);
+  border-radius: 6px;
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.code-footer-btn:hover:not(:disabled) {
+  background: var(--bg-surface-hover);
+  color: var(--text-primary);
+  border-color: var(--border-hover);
+}
+
+.code-footer-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.code-footer-btn.run {
+  background: rgba(52, 168, 83, 0.1);
+  color: var(--google-green);
+  border-color: rgba(52, 168, 83, 0.3);
+}
+
+.code-footer-btn.run:hover:not(:disabled) {
+  background: var(--google-green);
+  color: white;
+  border-color: var(--google-green);
+  box-shadow: 0 0 10px rgba(52, 168, 83, 0.3);
 }
 
 /* ============================================================
