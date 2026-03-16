@@ -13,6 +13,7 @@ export interface ServerMessage {
     mode?: string;
     message?: string;
     name?: string;
+    turn_id?: string;
     args?: Record<string, unknown>;
     result?: Record<string, unknown>;
 }
@@ -39,7 +40,19 @@ export type AgentMode =
 
 export type AgentState = "listening" | "thinking" | "speaking" | "interrupted" | "disconnected";
 
-const WS_URL = process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:8080/ws";
+const getWsUrl = () => {
+    if (typeof process !== "undefined" && process.env.NEXT_PUBLIC_WS_URL) return process.env.NEXT_PUBLIC_WS_URL;
+    if (typeof window !== "undefined") {
+        const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+        if (window.location.hostname === "localhost" && window.location.port === "3000") {
+            return "ws://localhost:8080/ws";
+        }
+        return `${protocol}//${window.location.host}/ws`;
+    }
+    return "ws://localhost:8080/ws";
+};
+
+const WS_URL = getWsUrl();
 
 export interface UseNexusSocketReturn {
     wsRef: React.MutableRefObject<WebSocket | null>;
@@ -149,6 +162,63 @@ export function useNexusSocket(
                     flushAudio();
                 }
                 break;
+            case "text": {
+                const rawText = msg.content || "";
+                let cleanText = rawText.replace(/\[\s*\d+\s*,\s*\d+\s*,\s*\d+\s*,\s*\d+\s*\]/g, "");
+                
+                // --- Strip thinking / reasoning text ---
+                // Remove <think>...</think> blocks (may span multiple lines)
+                cleanText = cleanText.replace(/<think>[\s\S]*?<\/think>/gi, "");
+                // Remove [Thinking] or [Internal] prefixed lines
+                cleanText = cleanText.replace(/^\[(?:Thinking|Internal|Reasoning)\].*$/gim, "");
+                // Remove **Thinking:** blocks (markdown bold headers used for reasoning)
+                cleanText = cleanText.replace(/\*\*(?:Thinking|Internal Monologue|Reasoning):\*\*[\s\S]*?(?=\n\n|\n\*\*|$)/gi, "");
+                // Clean up excess whitespace left after stripping
+                cleanText = cleanText.replace(/\n{3,}/g, "\n\n").trim();
+                
+                // If it was ONLY a bounding box or thinking (which are hidden), skip
+                if (!cleanText.trim() && rawText.trim()) break;
+
+                // When text arrives, the agent is definitely "speaking" (or responding)
+                setDebouncedAgentState("speaking");
+
+                setMessages((prev) => {
+                    const updated = [...prev];
+                    const lastMsg = updated[updated.length - 1];
+                    const turnId = msg.turn_id || `turn-${Date.now()}`;
+
+                    // Merge only when this chunk clearly belongs to the same logical turn.
+                    // We now require an explicit, matching turn_id so that multiple
+                    // back‑to‑back agent messages show up as separate bubbles instead
+                    // of being "stacked" into one.
+                    const shouldMerge =
+                        !!msg.turn_id &&
+                        lastMsg &&
+                        lastMsg.role === "agent" &&
+                        lastMsg.type === "text" &&
+                        lastMsg.id === msg.turn_id;
+
+                    if (shouldMerge) {
+                        updated[updated.length - 1] = {
+                            ...lastMsg,
+                            content: lastMsg.content + cleanText,
+                        };
+                        return updated;
+                    }
+
+                    return [
+                        ...updated,
+                        {
+                            id: turnId,
+                            role: "agent",
+                            type: "text",
+                            content: cleanText,
+                            timestamp: new Date(),
+                        },
+                    ];
+                });
+                break;
+            }
             case "tool_call":
                 addMessage("agent", "tool", `Using tool: ${msg.name}`, undefined, undefined, msg.name, msg.args);
                 break;

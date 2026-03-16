@@ -106,3 +106,41 @@ class CodeEngine:
         except Exception as e:
             logger.error(f"Error reading file {file_path}: {e}")
             return {"error": str(e)}
+
+    async def execute_code(self, code: str, language: str = "python") -> Dict[str, Any]:
+        """
+        Execute python or javascript code safely.
+        """
+        import tempfile
+        import subprocess
+        
+        try:
+            if language.lower() not in ["python", "javascript", "js", "cpp"]:
+                return {"error": f"Language {language} is not supported."}
+                
+            suffix = ".py"
+            cmd = ["python"]
+            if language.lower() in ["javascript", "js"]:
+                suffix = ".js"
+                cmd = ["node"]
+            
+            with tempfile.NamedTemporaryFile(suffix=suffix, delete=False, mode='w', encoding='utf-8') as f:
+                f.write(code)
+                temp_path = f.name
+                
+            try:
+                cmd.append(temp_path)
+                result = subprocess.run(cmd, capture_output=True, text=True, timeout=10)
+                return {
+                    "stdout": result.stdout,
+                    "stderr": result.stderr,
+                    "exit_code": result.returncode
+                }
+            except subprocess.TimeoutExpired:
+                return {"error": "Execution timed out after 10 seconds."}
+            finally:
+                if os.path.exists(temp_path):
+                    os.remove(temp_path)
+        except Exception as e:
+            return {"error": str(e)}
+

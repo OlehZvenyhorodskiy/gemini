@@ -10,7 +10,19 @@
 import type { AgentMode } from "@/hooks";
 
 // ─── WebSocket URL ─────────────────────────────────────────────
-export const WS_URL = process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:8080/ws";
+export const getWsUrl = () => {
+    if (typeof process !== "undefined" && process.env.NEXT_PUBLIC_WS_URL) return process.env.NEXT_PUBLIC_WS_URL;
+    if (typeof window !== "undefined") {
+        const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+        if (window.location.hostname === "localhost" && window.location.port === "3000") {
+            return "ws://localhost:8080/ws";
+        }
+        return `${protocol}//${window.location.host}/ws`;
+    }
+    return "ws://localhost:8080/ws";
+};
+
+export const WS_URL = getWsUrl();
 
 // ─── Mode Metadata ─────────────────────────────────────────────
 export interface ModeInfo {
@@ -45,6 +57,12 @@ export const MODE_SUGGESTIONS: Partial<Record<AgentMode, string[]>> = {
     navigator: ["Help me navigate this website", "Find and click the settings button", "Fill out this form for me", "Take a screenshot and analyze it"],
     code: ["Review this function for bugs", "Refactor this code to be cleaner", "Help me debug this error message", "Explain how this algorithm works"],
     research: ["Research the latest AI model releases", "Compare React vs Vue for my project", "Find papers on renewable energy tech", "What are the best practices for API design?"],
+    language: ["Teach me how to order food in Japanese", "Practice a French conversation with me", "How do you say 'thank you' in 10 languages?", "Correct my Spanish pronunciation"],
+    data: ["Analyze the trend in this chart", "What does this pie chart tell us?", "Summarize the key metrics from this spreadsheet", "Find anomalies in my sales data"],
+    music: ["Explain the chord progression of Bohemian Rhapsody", "Write lyrics for a lo-fi hip hop track", "What key is this melody in?", "Design a song structure for a rock ballad"],
+    game: ["Start a fantasy RPG adventure", "I enter the ancient dungeon", "Create a cyberpunk mystery scenario", "I want to negotiate with the dragon"],
+    meeting: ["Summarize the key action items", "Who is responsible for what?", "What decisions were made?", "List all deadlines mentioned"],
+    security: ["Scan this page for vulnerabilities", "Is this URL suspicious?", "Check for exposed API keys in this code", "Analyze this login form for security flaws"],
     fitness: ["Design a 4-day upper/lower split for me", "Check my squat form via camera", "What should I eat post-workout?", "Build me a 20-minute HIIT routine"],
     travel: ["Plan a 5-day trip to Tokyo on a mid-range budget", "What do I need to know before visiting Morocco?", "Find the best flights to Barcelona next month", "What's the best time to visit Iceland?"],
     debate: ["Let's debate whether AI will replace most jobs", "Argue for universal basic income — I'll argue against", "Is social media a net positive for society?", "Should college education be free?"],

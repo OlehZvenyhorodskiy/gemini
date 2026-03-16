@@ -76,20 +76,6 @@ def build_common_tool_declarations() -> list[types.FunctionDeclaration]:
     """
     return [
         types.FunctionDeclaration(
-            name="search_web",
-            description="Search the web for current information, facts, or context.",
-            parameters=types.Schema(
-                type=types.Type.OBJECT,
-                properties={
-                    "query": types.Schema(
-                        type=types.Type.STRING,
-                        description="The search query",
-                    ),
-                },
-                required=["query"],
-            ),
-        ),
-        types.FunctionDeclaration(
             name="remember_fact",
             description="Save important facts about the user (e.g., name, preferences, project details) to long-term memory.",
             parameters=types.Schema(
@@ -137,17 +123,17 @@ def build_common_tool_declarations() -> list[types.FunctionDeclaration]:
         ),
         types.FunctionDeclaration(
             name="render_widget",
-            description="Instantly render an interactive React UI widget on the user's screen (e.g., a timer, poll, or chart).",
+            description="Instantly render an interactive React UI widget on the user's screen (e.g., a timer, poll, chart, knowledge_graph, or mood_board).",
             parameters=types.Schema(
                 type=types.Type.OBJECT,
                 properties={
                     "widget_type": types.Schema(
                         type=types.Type.STRING,
-                        description="The type of widget to render: 'timer', 'poll', 'chart', or 'weather'",
+                        description="The type of widget to render: 'timer', 'poll', 'chart', 'weather', 'knowledge_graph', or 'mood_board'",
                     ),
                     "data": types.Schema(
                         type=types.Type.STRING,
-                        description="JSON string containing the widget configuration (e.g. {'minutes': 5} for timer, {'question': '...', 'options': ['A', 'B', 'C']} for poll)",
+                        description="JSON string containing the widget configuration (e.g. {'nodes': [...], 'edges': [...]} for knowledge_graph, {'colors': ['#fff', ...], 'images': [...]} for mood_board)",
                     ),
                 },
                 required=["widget_type", "data"],
@@ -340,6 +326,24 @@ def build_code_tool_declarations() -> list[types.FunctionDeclaration]:
                 required=["file_path"],
             ),
         ),
+        types.FunctionDeclaration(
+            name="execute_code",
+            description="Execute code locally in the workspace (Python, JavaScript/Node.js).",
+            parameters=types.Schema(
+                type=types.Type.OBJECT,
+                properties={
+                    "code": types.Schema(
+                        type=types.Type.STRING,
+                        description="The code to execute",
+                    ),
+                    "language": types.Schema(
+                        type=types.Type.STRING,
+                        description="The language: 'python' or 'javascript'",
+                    ),
+                },
+                required=["code", "language"],
+            ),
+        ),
     ]
 
 
@@ -348,21 +352,23 @@ def get_tools_for_mode(mode: str) -> list[types.Tool]:
     Assemble the full tool list for a given mode.
     Common tools are always included; mode-specific tools are
     appended based on the base mode family.
+
+    NOTE: Google Search is currently disabled for Live API
+    as it conflicts with custom function declarations.
     """
     base = MODE_TO_BASE.get(mode, "live")
 
-    tools: list[types.Tool] = [
-        types.Tool(google_search=types.GoogleSearch()),
-        types.Tool(function_declarations=build_common_tool_declarations()),
-    ]
+    # Group all declarations into a single FunctionDeclaration tool
+    all_decls = build_common_tool_declarations()
 
-    if base == "creative":
-        tools.append(types.Tool(function_declarations=build_creative_tool_declarations()))
+    if base == "creative" or mode in ["music", "game"]:
+        all_decls.extend(build_creative_tool_declarations())
 
-    if base == "navigator":
-        tools.append(types.Tool(function_declarations=build_navigator_tool_declarations()))
+    if base == "navigator" or mode == "security":
+        all_decls.extend(build_navigator_tool_declarations())
 
-    if base == "code":
-        tools.append(types.Tool(function_declarations=build_code_tool_declarations()))
+    if mode == "code":
+        all_decls.extend(build_code_tool_declarations())
 
-    return tools
+    return [types.Tool(function_declarations=all_decls)]
+

@@ -63,6 +63,7 @@ class ToolRouter:
             # Code Copilot tools
             "read_directory": self._handle_read_directory,
             "read_file": self._handle_read_file,
+            "execute_code": self._handle_execute_code,
         }
 
     async def execute(
@@ -271,4 +272,12 @@ class ToolRouter:
     ) -> dict[str, Any]:
         return await self.code_engine.read_file(
             file_path=args.get("file_path", ""),
+        )
+
+    async def _handle_execute_code(
+        self, session_id: str, args: dict[str, Any], sessions: dict[str, AgentSession]
+    ) -> dict[str, Any]:
+        return await self.code_engine.execute_code(
+            code=args.get("code", ""),
+            language=args.get("language", "python"),
         )

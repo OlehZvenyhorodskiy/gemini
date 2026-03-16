@@ -38,7 +38,13 @@ desktop.ini
 
 # Docker
 *.log
+uvicorn_output*.log
 
 # Firebase
 firebase-debug.log
 .firebase/
+
+# Development artifacts
+*.backup
+ws_error.txt
+docs/internal/

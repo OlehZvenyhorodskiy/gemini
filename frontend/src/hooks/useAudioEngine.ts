@@ -8,6 +8,13 @@ import { useRef, useCallback } from "react";
  */
 const PLAYBACK_SAMPLE_RATE = 24000;
 
+/**
+ * Crossfade duration in samples — blends the junction between
+ * consecutive audio chunks to eliminate clicks/pops at boundaries.
+ * 64 samples at 24kHz = ~2.7ms, imperceptible but effective.
+ */
+const CROSSFADE_SAMPLES = 64;
+
 export type AudioQueueItem =
     | { type: "audio"; buffer: ArrayBuffer }
     | { type: "image"; data: string; mime: string };
@@ -44,11 +51,10 @@ export interface UseAudioEngineReturn {
  * useAudioEngine — manages the Web Audio playback pipeline:
  *   - base64 PCM → Int16 → Float32 → AudioBuffer scheduling
  *   - gapless chunk chaining via `source.onended`
+ *   - crossfade between chunks to eliminate boundary clicks
+ *   - gain normalization to reduce hissing/clipping
  *   - instant barge-in via suspend() → close() → recreate
  *   - AnalyserNode exposed for the AudioVisualizer component
- *
- * Pulled out of page.tsx so the main component never touches
- * AudioContext directly.
  */
 export function useAudioEngine(): UseAudioEngineReturn {
     const audioQueueRef = useRef<AudioQueueItem[]>([]);
@@ -56,26 +62,60 @@ export function useAudioEngine(): UseAudioEngineReturn {
     const playbackCtxRef = useRef<AudioContext | null>(null);
     const nextPlayTimeRef = useRef(0);
     const outputAnalyserRef = useRef<AnalyserNode | null>(null);
+    const gainNodeRef = useRef<GainNode | null>(null);
+    const lastChunkTailRef = useRef<Float32Array | null>(null);
 
     /**
-     * Lazily creates the AudioContext and AnalyserNode on first use.
-     * The analyser sits between source → analyser → destination so the
-     * AudioVisualizer can read frequency data without any latency hit.
+     * Lazily creates the AudioContext, GainNode, and AnalyserNode on first use.
+     * Audio graph: source → gain → analyser → destination
+     * The gain node normalizes levels, the analyser feeds the visualizer.
      */
     const ensureContext = useCallback(() => {
         if (!playbackCtxRef.current) {
             const ctx = new AudioContext({ sampleRate: PLAYBACK_SAMPLE_RATE });
             playbackCtxRef.current = ctx;
 
-            // Wire up the analyser for the visualizer — 2048 FFT gives
+            // Gain node for level normalization — slight boost to
+            // counteract the typically quiet PCM output from the API
+            const gain = ctx.createGain();
+            gain.gain.value = 1.15; // Gentle +1.2dB boost
+            gainNodeRef.current = gain;
+
+            // Analyser for the visualizer — 2048 FFT gives
             // 1024 frequency bins, enough for a smooth organic waveform
             const analyser = ctx.createAnalyser();
             analyser.fftSize = 2048;
-            analyser.smoothingTimeConstant = 0.8;
+            analyser.smoothingTimeConstant = 0.85; // Smoother than 0.8
+            
+            // Wire: gain → analyser → destination
+            gain.connect(analyser);
             analyser.connect(ctx.destination);
             outputAnalyserRef.current = analyser;
         }
         return playbackCtxRef.current;
+    }, []);
+
+    /**
+     * Apply a short crossfade at the start of a chunk using the
+     * tail of the previous chunk. This eliminates the click/pop
+     * artifacts that occur at buffer boundaries.
+     */
+    const applyCrossfade = useCallback((samples: Float32Array): Float32Array => {
+        const prevTail = lastChunkTailRef.current;
+        if (!prevTail || prevTail.length === 0) return samples;
+
+        const fadeLen = Math.min(CROSSFADE_SAMPLES, samples.length, prevTail.length);
+        const result = new Float32Array(samples);
+        
+        for (let i = 0; i < fadeLen; i++) {
+            const t = i / fadeLen; // 0 → 1
+            // Smooth cosine crossfade
+            const fadeOut = 0.5 * (1 + Math.cos(Math.PI * t));
+            const fadeIn = 1 - fadeOut;
+            result[i] = prevTail[prevTail.length - fadeLen + i] * fadeOut + samples[i] * fadeIn;
+        }
+
+        return result;
     }, []);
 
     /**
@@ -104,13 +144,15 @@ export function useAudioEngine(): UseAudioEngineReturn {
      * Internal chunk player — shared between the public API and
      * the `source.onended` callback.
      *
-     * Routes audio through the AnalyserNode so the visualizer can
-     * pick up frequency data from the agent's voice output.
+     * Routes audio through GainNode → AnalyserNode so the visualizer
+     * can pick up frequency data from the agent's voice output.
+     * Applies crossfade between chunks for smooth audio.
      */
     const playNextChunkInternal = useCallback(
         (onImage: (data: string, mime: string) => void) => {
             if (audioQueueRef.current.length === 0) {
                 isPlayingRef.current = false;
+                lastChunkTailRef.current = null;
                 return;
             }
 
@@ -131,14 +173,24 @@ export function useAudioEngine(): UseAudioEngineReturn {
                 float32Data[i] = int16Data[i] / 32768.0;
             }
 
-            const audioBuffer = ctx.createBuffer(1, float32Data.length, PLAYBACK_SAMPLE_RATE);
-            audioBuffer.copyToChannel(float32Data, 0);
+            // Apply crossfade with previous chunk's tail
+            const processedData = applyCrossfade(float32Data);
+            
+            // Save the tail of this chunk for the next crossfade
+            if (float32Data.length > CROSSFADE_SAMPLES) {
+                lastChunkTailRef.current = float32Data.slice(-CROSSFADE_SAMPLES);
+            }
+
+            const audioBuffer = ctx.createBuffer(1, processedData.length, PLAYBACK_SAMPLE_RATE);
+            audioBuffer.copyToChannel(new Float32Array(processedData.buffer as ArrayBuffer), 0);
 
             const source = ctx.createBufferSource();
             source.buffer = audioBuffer;
 
-            // Route through the analyser so the visualizer gets data
-            if (outputAnalyserRef.current) {
+            // Route through gain → analyser chain
+            if (gainNodeRef.current) {
+                source.connect(gainNodeRef.current);
+            } else if (outputAnalyserRef.current) {
                 source.connect(outputAnalyserRef.current);
             } else {
                 source.connect(ctx.destination);
@@ -151,7 +203,7 @@ export function useAudioEngine(): UseAudioEngineReturn {
 
             source.onended = () => playNextChunkInternal(onImage);
         },
-        [ensureContext]
+        [ensureContext, applyCrossfade]
     );
 
     /**
@@ -170,25 +222,30 @@ export function useAudioEngine(): UseAudioEngineReturn {
      *   1. Empty the queue so no NEW chunks get scheduled
      *   2. Suspend the running AudioContext (stops mid-buffer playback instantly)
      *   3. Close the old context + create a fresh one for the next response
-     *   4. Reset the play-head and analyser
+     *   4. Reset the play-head, crossfade state, and analyser
      */
     const flushAudio = useCallback(() => {
         audioQueueRef.current = [];
         isPlayingRef.current = false;
+        lastChunkTailRef.current = null;
 
         if (playbackCtxRef.current) {
             try {
-                // suspend() stops playback THIS frame — close() alone
-                // lets the current buffer finish, which is the root cause
-                // of the "laggy barge-in" bug from the audit.
                 playbackCtxRef.current.suspend().then(() => {
                     playbackCtxRef.current?.close().then(() => {
-                        // Recreate context + analyser as a fresh pair
+                        // Recreate context + gain + analyser as a fresh chain
                         const ctx = new AudioContext({ sampleRate: PLAYBACK_SAMPLE_RATE });
                         playbackCtxRef.current = ctx;
+                        
+                        const gain = ctx.createGain();
+                        gain.gain.value = 1.15;
+                        gainNodeRef.current = gain;
+                        
                         const analyser = ctx.createAnalyser();
                         analyser.fftSize = 2048;
-                        analyser.smoothingTimeConstant = 0.8;
+                        analyser.smoothingTimeConstant = 0.85;
+                        
+                        gain.connect(analyser);
                         analyser.connect(ctx.destination);
                         outputAnalyserRef.current = analyser;
                         nextPlayTimeRef.current = 0;

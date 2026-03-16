@@ -1,0 +1,1348 @@
+
+To live stream log output for this build, please ensure the grpc module is installed. Run:
+  pip install grpcio
+and set:
+  export CLOUDSDK_PYTHON_SITEPACKAGES=1
+
+------------ REMOTE BUILD OUTPUT ------------
+starting build "d6d003a1-8711-4199-a484-a20471dd0d83"
+FETCHSOURCE
+Fetching storage object: gs://project-1a707446-a9a9-4354-9f5_cloudbuild/source/1773578943.068367-a365937398f9472b97c443ddd0544fbe.tgz#1773578945695868
+Copying gs://project-1a707446-a9a9-4354-9f5_cloudbuild/source/1773578943.068367-a365937398f9472b97c443ddd0544fbe.tgz#1773578945695868...
+/ [0 files][    0.0 B/206.3 KiB]                                                / [1 files][206.3 KiB/206.3 KiB]
+Operation completed over 1 objects/206.3 KiB.
+BUILD
+Starting Step #0
+Step #0: Already have image (with digest): gcr.io/cloud-builders/docker
+Step #0: Sending build context to Docker daemon  953.9kB
+Step #0: Step 1/20 : FROM node:22-alpine AS frontend-builder
+Step #0: 22-alpine: Pulling from library/node
+Step #0: 589002ba0eae: Already exists
+Step #0: ed87be4595e5: Pulling fs layer
+Step #0: c699e235cde4: Pulling fs layer
+Step #0: 7c9e1e1c637a: Pulling fs layer
+Step #0: c699e235cde4: Verifying Checksum
+Step #0: c699e235cde4: Download complete
+Step #0: 7c9e1e1c637a: Verifying Checksum
+Step #0: 7c9e1e1c637a: Download complete
+Step #0: ed87be4595e5: Verifying Checksum
+Step #0: ed87be4595e5: Download complete
+Step #0: ed87be4595e5: Pull complete
+Step #0: c699e235cde4: Pull complete
+Step #0: 7c9e1e1c637a: Pull complete
+Step #0: Digest: sha256:8094c002d08262dba12645a3b4a15cd6cd627d30bc782f53229a2ec13ee22a00
+Step #0: Status: Downloaded newer image for node:22-alpine
+Step #0:  ---> be1a50ca7b74
+Step #0: Step 2/20 : WORKDIR /app/frontend
+Step #0:  ---> Running in 47f92d1e8083
+Step #0: Removing intermediate container 47f92d1e8083
+Step #0:  ---> 592c6d4ef12a
+Step #0: Step 3/20 : COPY frontend/package*.json ./
+Step #0:  ---> 67e1a3fb0555
+Step #0: Step 4/20 : RUN npm ci --production=false
+Step #0:  ---> Running in b62c68177ee3
+Step #0: [91mnpm warn config production Use `--omit=dev` instead.
+Step #0: [0m
+Step #0: added 60 packages, and audited 61 packages in 15s
+Step #0:
+Step #0: 15 packages are looking for funding
+Step #0:   run `npm fund` for details
+Step #0:
+Step #0: found 0 vulnerabilities
+Step #0: [91mnpm notice
+Step #0: npm notice New major version of npm available! 10.9.4 -> 11.11.1
+Step #0: npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.11.1
+Step #0: npm notice To update run: npm install -g npm@11.11.1
+Step #0: npm notice
+Step #0: [0mRemoving intermediate container b62c68177ee3
+Step #0:  ---> 2127d1b7c8df
+Step #0: Step 5/20 : COPY frontend/ ./
+Step #0:  ---> a56b81572f13
+Step #0: Step 6/20 : RUN npm run build
+Step #0:  ---> Running in 15a0297f66d7
+Step #0:
+Step #0: > nexus-frontend@1.0.0 build
+Step #0: > next build
+Step #0:
+Step #0: Attention: Next.js now collects completely anonymous telemetry regarding usage.
+Step #0: This information is used to shape Next.js' roadmap and prioritize features.
+Step #0: You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+Step #0: https://nextjs.org/telemetry
+Step #0:
+Step #0:    ? Next.js 15.5.12
+Step #0:
+Step #0:    Creating an optimized production build ...
+Step #0:  ? Compiled successfully in 21.9s
+Step #0:    Skipping linting
+Step #0:    Checking validity of types ...
+Step #0:    Collecting page data ...
+Step #0:    Generating static pages (0/4) ...
+Step #0:    Generating static pages (1/4)
+Step #0:    Generating static pages (2/4)
+Step #0:    Generating static pages (3/4)
+Step #0:  ? Generating static pages (4/4)
+Step #0:    Finalizing page optimization ...
+Step #0:    Collecting build traces ...
+Step #0:    Exporting (0/2) ...
+Step #0:  ? Exporting (2/2)
+Step #0:
+Step #0: Route (app)                                 Size  First Load JS
+Step #0: ? ? /                                     103 kB         205 kB
+Step #0: ? ? /_not-found                            994 B         103 kB
+Step #0: + First Load JS shared by all             102 kB
+Step #0:   ? chunks/255-54d3085ce94738a4.js       46.1 kB
+Step #0:   ? chunks/4bd1b696-c023c6e3521b1417.js  54.2 kB
+Step #0:   ? other shared chunks (total)           1.9 kB
+Step #0:
+Step #0:
+Step #0: ?  (Static)  prerendered as static content
+Step #0:
+Step #0: Removing intermediate container 15a0297f66d7
+Step #0:  ---> abd26eeaadaf
+Step #0: Step 7/20 : FROM python:3.12-slim
+Step #0: 3.12-slim: Pulling from library/python
+Step #0: 206356c42440: Already exists
+Step #0: 30dad65d3b24: Pulling fs layer
+Step #0: 5d7ccc6599a6: Pulling fs layer
+Step #0: b9aab63c297c: Pulling fs layer
+Step #0: b9aab63c297c: Verifying Checksum
+Step #0: b9aab63c297c: Download complete
+Step #0: 30dad65d3b24: Verifying Checksum
+Step #0: 30dad65d3b24: Download complete
+Step #0: 5d7ccc6599a6: Verifying Checksum
+Step #0: 5d7ccc6599a6: Download complete
+Step #0: 30dad65d3b24: Pull complete
+Step #0: 5d7ccc6599a6: Pull complete
+Step #0: b9aab63c297c: Pull complete
+Step #0: Digest: sha256:ccc7089399c8bb65dd1fb3ed6d55efa538a3f5e7fca3f5988ac3b5b87e593bf0
+Step #0: Status: Downloaded newer image for python:3.12-slim
+Step #0:  ---> 6f90d4a79e7a
+Step #0: Step 8/20 : ENV PYTHONDONTWRITEBYTECODE=1
+Step #0:  ---> Running in 263d3309b4cb
+Step #0: Removing intermediate container 263d3309b4cb
+Step #0:  ---> a440541db9e1
+Step #0: Step 9/20 : ENV PYTHONUNBUFFERED=1
+Step #0:  ---> Running in 96d059ef3971
+Step #0: Removing intermediate container 96d059ef3971
+Step #0:  ---> 7c2806c3b631
+Step #0: Step 10/20 : WORKDIR /app
+Step #0:  ---> Running in 9eedefc8f709
+Step #0: Removing intermediate container 9eedefc8f709
+Step #0:  ---> abae328d582b
+Step #0: Step 11/20 : RUN apt-get update && apt-get install -y --no-install-recommends     gcc     libnss3 libnspr4 libdbus-1-3 libatk1.0-0 libatk-bridge2.0-0     libcups2 libdrm2 libxkbcommon0 libatspi2.0-0 libxcomposite1     libxdamage1 libxfixes3 libxrandr2 libgbm1 libpango-1.0-0     libcairo2 libasound2 libwayland-client0     && rm -rf /var/lib/apt/lists/*
+Step #0:  ---> Running in 6e4516bc3fe9
+Step #0: Get:1 http://deb.debian.org/debian trixie InRelease [140 kB]
+Step #0: Get:2 http://deb.debian.org/debian trixie-updates InRelease [47.3 kB]
+Step #0: Get:3 http://deb.debian.org/debian-security trixie-security InRelease [43.4 kB]
+Step #0: Get:4 http://deb.debian.org/debian trixie/main amd64 Packages [9671 kB]
+Step #0: Get:5 http://deb.debian.org/debian trixie-updates/main amd64 Packages [5412 B]
+Step #0: Get:6 http://deb.debian.org/debian-security trixie-security/main amd64 Packages [111 kB]
+Step #0: Fetched 10.0 MB in 1s (6884 kB/s)
+Step #0: Reading package lists...
+Step #0: Reading package lists...
+Step #0: Building dependency tree...
+Step #0: Reading state information...
+Step #0: The following additional packages will be installed:
+Step #0:   at-spi2-common binutils binutils-common binutils-x86-64-linux-gnu cpp cpp-14
+Step #0:   cpp-14-x86-64-linux-gnu cpp-x86-64-linux-gnu fontconfig fontconfig-config
+Step #0:   fonts-dejavu-core fonts-dejavu-mono gcc-14 gcc-14-x86-64-linux-gnu
+Step #0:   gcc-x86-64-linux-gnu libasan8 libasound2-data libatomic1 libavahi-client3
+Step #0:   libavahi-common-data libavahi-common3 libbinutils libbrotli1 libcc1-0
+Step #0:   libcom-err2 libctf-nobfd0 libctf0 libdatrie1 libdrm-amdgpu1 libdrm-common
+Step #0:   libdrm-intel1 libedit2 libelf1t64 libexpat1 libfontconfig1 libfreetype6
+Step #0:   libfribidi0 libgcc-14-dev libglib2.0-0t64 libgnutls30t64 libgomp1
+Step #0:   libgprofng0 libgraphite2-3 libgssapi-krb5-2 libharfbuzz0b libhwasan0
+Step #0:   libidn2-0 libisl23 libitm1 libjansson4 libk5crypto3 libkeyutils1 libkrb5-3
+Step #0:   libkrb5support0 libllvm19 liblsan0 libmpc3 libmpfr6 libp11-kit0
+Step #0:   libpciaccess0 libpixman-1-0 libpng16-16t64 libquadmath0 libsensors-config
+Step #0:   libsensors5 libsframe1 libtasn1-6 libthai-data libthai0 libtsan2 libubsan1
+Step #0:   libunistring5 libwayland-server0 libx11-6 libx11-data libx11-xcb1 libxau6
+Step #0:   libxcb-dri3-0 libxcb-present0 libxcb-randr0 libxcb-render0 libxcb-shm0
+Step #0:   libxcb-sync1 libxcb-xfixes0 libxcb1 libxdmcp6 libxext6 libxi6 libxml2
+Step #0:   libxrender1 libxshmfence1 libz3-4 mesa-libgallium xkb-data
+Step #0: Suggested packages:
+Step #0:   binutils-doc gprofng-gui binutils-gold cpp-doc gcc-14-locales cpp-14-doc
+Step #0:   gcc-multilib make manpages-dev autoconf automake libtool flex bison gdb
+Step #0:   gcc-doc gcc-14-multilib gcc-14-doc gdb-x86-64-linux-gnu alsa-utils
+Step #0:   libasound2-plugins cups-common low-memory-monitor gnutls-bin krb5-doc
+Step #0:   krb5-user pciutils lm-sensors
+Step #0: Recommended packages:
+Step #0:   libc6-dev | libc-dev libc6-dev libc-dev alsa-ucm-conf alsa-topology-conf
+Step #0:   at-spi2-core dbus libglib2.0-data shared-mime-info xdg-user-dirs
+Step #0:   krb5-locales
+Step #0: The following NEW packages will be installed:
+Step #0:   at-spi2-common binutils binutils-common binutils-x86-64-linux-gnu cpp cpp-14
+Step #0:   cpp-14-x86-64-linux-gnu cpp-x86-64-linux-gnu fontconfig fontconfig-config
+Step #0:   fonts-dejavu-core fonts-dejavu-mono gcc gcc-14 gcc-14-x86-64-linux-gnu
+Step #0:   gcc-x86-64-linux-gnu libasan8 libasound2-data libasound2t64
+Step #0:   libatk-bridge2.0-0t64 libatk1.0-0t64 libatomic1 libatspi2.0-0t64
+Step #0:   libavahi-client3 libavahi-common-data libavahi-common3 libbinutils
+Step #0:   libbrotli1 libcairo2 libcc1-0 libcom-err2 libctf-nobfd0 libctf0 libcups2t64
+Step #0:   libdatrie1 libdbus-1-3 libdrm-amdgpu1 libdrm-common libdrm-intel1 libdrm2
+Step #0:   libedit2 libelf1t64 libexpat1 libfontconfig1 libfreetype6 libfribidi0
+Step #0:   libgbm1 libgcc-14-dev libglib2.0-0t64 libgnutls30t64 libgomp1 libgprofng0
+Step #0:   libgraphite2-3 libgssapi-krb5-2 libharfbuzz0b libhwasan0 libidn2-0 libisl23
+Step #0:   libitm1 libjansson4 libk5crypto3 libkeyutils1 libkrb5-3 libkrb5support0
+Step #0:   libllvm19 liblsan0 libmpc3 libmpfr6 libnspr4 libnss3 libp11-kit0
+Step #0:   libpango-1.0-0 libpciaccess0 libpixman-1-0 libpng16-16t64 libquadmath0
+Step #0:   libsensors-config libsensors5 libsframe1 libtasn1-6 libthai-data libthai0
+Step #0:   libtsan2 libubsan1 libunistring5 libwayland-client0 libwayland-server0
+Step #0:   libx11-6 libx11-data libx11-xcb1 libxau6 libxcb-dri3-0 libxcb-present0
+Step #0:   libxcb-randr0 libxcb-render0 libxcb-shm0 libxcb-sync1 libxcb-xfixes0 libxcb1
+Step #0:   libxcomposite1 libxdamage1 libxdmcp6 libxext6 libxfixes3 libxi6
+Step #0:   libxkbcommon0 libxml2 libxrandr2 libxrender1 libxshmfence1 libz3-4
+Step #0:   mesa-libgallium xkb-data
+Step #0: 0 upgraded, 113 newly installed, 0 to remove and 11 not upgraded.
+Step #0: Need to get 114 MB of archives.
+Step #0: After this operation, 449 MB of additional disk space will be used.
+Step #0: Get:1 http://deb.debian.org/debian trixie/main amd64 libexpat1 amd64 2.7.1-2 [108 kB]
+Step #0: Get:2 http://deb.debian.org/debian trixie/main amd64 at-spi2-common all 2.56.2-1+deb13u1 [171 kB]
+Step #0: Get:3 http://deb.debian.org/debian trixie/main amd64 libsframe1 amd64 2.44-3 [78.4 kB]
+Step #0: Get:4 http://deb.debian.org/debian trixie/main amd64 binutils-common amd64 2.44-3 [2509 kB]
+Step #0: Get:5 http://deb.debian.org/debian trixie/main amd64 libbinutils amd64 2.44-3 [534 kB]
+Step #0: Get:6 http://deb.debian.org/debian trixie/main amd64 libgprofng0 amd64 2.44-3 [808 kB]
+Step #0: Get:7 http://deb.debian.org/debian trixie/main amd64 libctf-nobfd0 amd64 2.44-3 [156 kB]
+Step #0: Get:8 http://deb.debian.org/debian trixie/main amd64 libctf0 amd64 2.44-3 [88.6 kB]
+Step #0: Get:9 http://deb.debian.org/debian trixie/main amd64 libjansson4 amd64 2.14-2+b3 [39.8 kB]
+Step #0: Get:10 http://deb.debian.org/debian trixie/main amd64 binutils-x86-64-linux-gnu amd64 2.44-3 [1014 kB]
+Step #0: Get:11 http://deb.debian.org/debian trixie/main amd64 binutils amd64 2.44-3 [265 kB]
+Step #0: Get:12 http://deb.debian.org/debian trixie/main amd64 libisl23 amd64 0.27-1 [659 kB]
+Step #0: Get:13 http://deb.debian.org/debian trixie/main amd64 libmpfr6 amd64 4.2.2-1 [729 kB]
+Step #0: Get:14 http://deb.debian.org/debian trixie/main amd64 libmpc3 amd64 1.3.1-1+b3 [52.2 kB]
+Step #0: Get:15 http://deb.debian.org/debian trixie/main amd64 cpp-14-x86-64-linux-gnu amd64 14.2.0-19 [11.0 MB]
+Step #0: Get:16 http://deb.debian.org/debian trixie/main amd64 cpp-14 amd64 14.2.0-19 [1280 B]
+Step #0: Get:17 http://deb.debian.org/debian trixie/main amd64 cpp-x86-64-linux-gnu amd64 4:14.2.0-1 [4840 B]
+Step #0: Get:18 http://deb.debian.org/debian trixie/main amd64 cpp amd64 4:14.2.0-1 [1568 B]
+Step #0: Get:19 http://deb.debian.org/debian trixie/main amd64 libbrotli1 amd64 1.1.0-2+b7 [307 kB]
+Step #0: Get:20 http://deb.debian.org/debian trixie/main amd64 libpng16-16t64 amd64 1.6.48-1+deb13u3 [283 kB]
+Step #0: Get:21 http://deb.debian.org/debian trixie/main amd64 libfreetype6 amd64 2.13.3+dfsg-1 [452 kB]
+Step #0: Get:22 http://deb.debian.org/debian trixie/main amd64 fonts-dejavu-mono all 2.37-8 [489 kB]
+Step #0: Get:23 http://deb.debian.org/debian trixie/main amd64 fonts-dejavu-core all 2.37-8 [840 kB]
+Step #0: Get:24 http://deb.debian.org/debian trixie/main amd64 fontconfig-config amd64 2.15.0-2.3 [318 kB]
+Step #0: Get:25 http://deb.debian.org/debian trixie/main amd64 libfontconfig1 amd64 2.15.0-2.3 [392 kB]
+Step #0: Get:26 http://deb.debian.org/debian trixie/main amd64 fontconfig amd64 2.15.0-2.3 [463 kB]
+Step #0: Get:27 http://deb.debian.org/debian trixie/main amd64 libcc1-0 amd64 14.2.0-19 [42.8 kB]
+Step #0: Get:28 http://deb.debian.org/debian trixie/main amd64 libgomp1 amd64 14.2.0-19 [137 kB]
+Step #0: Get:29 http://deb.debian.org/debian trixie/main amd64 libitm1 amd64 14.2.0-19 [26.0 kB]
+Step #0: Get:30 http://deb.debian.org/debian trixie/main amd64 libatomic1 amd64 14.2.0-19 [9308 B]
+Step #0: Get:31 http://deb.debian.org/debian trixie/main amd64 libasan8 amd64 14.2.0-19 [2725 kB]
+Step #0: Get:32 http://deb.debian.org/debian trixie/main amd64 liblsan0 amd64 14.2.0-19 [1204 kB]
+Step #0: Get:33 http://deb.debian.org/debian trixie/main amd64 libtsan2 amd64 14.2.0-19 [2460 kB]
+Step #0: Get:34 http://deb.debian.org/debian trixie/main amd64 libubsan1 amd64 14.2.0-19 [1074 kB]
+Step #0: Get:35 http://deb.debian.org/debian trixie/main amd64 libhwasan0 amd64 14.2.0-19 [1488 kB]
+Step #0: Get:36 http://deb.debian.org/debian trixie/main amd64 libquadmath0 amd64 14.2.0-19 [145 kB]
+Step #0: Get:37 http://deb.debian.org/debian trixie/main amd64 libgcc-14-dev amd64 14.2.0-19 [2672 kB]
+Step #0: Get:38 http://deb.debian.org/debian trixie/main amd64 gcc-14-x86-64-linux-gnu amd64 14.2.0-19 [21.4 MB]
+Step #0: Get:39 http://deb.debian.org/debian trixie/main amd64 gcc-14 amd64 14.2.0-19 [540 kB]
+Step #0: Get:40 http://deb.debian.org/debian trixie/main amd64 gcc-x86-64-linux-gnu amd64 4:14.2.0-1 [1436 B]
+Step #0: Get:41 http://deb.debian.org/debian trixie/main amd64 gcc amd64 4:14.2.0-1 [5136 B]
+Step #0: Get:42 http://deb.debian.org/debian trixie/main amd64 libasound2-data all 1.2.14-1 [21.1 kB]
+Step #0: Get:43 http://deb.debian.org/debian trixie/main amd64 libasound2t64 amd64 1.2.14-1 [381 kB]
+Step #0: Get:44 http://deb.debian.org/debian trixie/main amd64 libglib2.0-0t64 amd64 2.84.4-3~deb13u2 [1518 kB]
+Step #0: Get:45 http://deb.debian.org/debian trixie/main amd64 libatk1.0-0t64 amd64 2.56.2-1+deb13u1 [52.0 kB]
+Step #0: Get:46 http://deb.debian.org/debian trixie/main amd64 libdbus-1-3 amd64 1.16.2-2 [178 kB]
+Step #0: Get:47 http://deb.debian.org/debian trixie/main amd64 libxau6 amd64 1:1.0.11-1 [20.4 kB]
+Step #0: Get:48 http://deb.debian.org/debian trixie/main amd64 libxdmcp6 amd64 1:1.1.5-1 [27.8 kB]
+Step #0: Get:49 http://deb.debian.org/debian trixie/main amd64 libxcb1 amd64 1.17.0-2+b1 [144 kB]
+Step #0: Get:50 http://deb.debian.org/debian trixie/main amd64 libx11-data all 2:1.8.12-1 [343 kB]
+Step #0: Get:51 http://deb.debian.org/debian trixie/main amd64 libx11-6 amd64 2:1.8.12-1 [815 kB]
+Step #0: Get:52 http://deb.debian.org/debian trixie/main amd64 libxext6 amd64 2:1.3.4-1+b3 [50.4 kB]
+Step #0: Get:53 http://deb.debian.org/debian trixie/main amd64 libxi6 amd64 2:1.8.2-1 [78.9 kB]
+Step #0: Get:54 http://deb.debian.org/debian trixie/main amd64 libatspi2.0-0t64 amd64 2.56.2-1+deb13u1 [80.7 kB]
+Step #0: Get:55 http://deb.debian.org/debian trixie/main amd64 libatk-bridge2.0-0t64 amd64 2.56.2-1+deb13u1 [68.4 kB]
+Step #0: Get:56 http://deb.debian.org/debian trixie/main amd64 libavahi-common-data amd64 0.8-16 [112 kB]
+Step #0: Get:57 http://deb.debian.org/debian trixie/main amd64 libavahi-common3 amd64 0.8-16 [44.2 kB]
+Step #0: Get:58 http://deb.debian.org/debian trixie/main amd64 libavahi-client3 amd64 0.8-16 [48.4 kB]
+Step #0: Get:59 http://deb.debian.org/debian trixie/main amd64 libpixman-1-0 amd64 0.44.0-3 [248 kB]
+Step #0: Get:60 http://deb.debian.org/debian trixie/main amd64 libxcb-render0 amd64 1.17.0-2+b1 [115 kB]
+Step #0: Get:61 http://deb.debian.org/debian trixie/main amd64 libxcb-shm0 amd64 1.17.0-2+b1 [105 kB]
+Step #0: Get:62 http://deb.debian.org/debian trixie/main amd64 libxrender1 amd64 1:0.9.12-1 [27.9 kB]
+Step #0: Get:63 http://deb.debian.org/debian trixie/main amd64 libcairo2 amd64 1.18.4-1+b1 [538 kB]
+Step #0: Get:64 http://deb.debian.org/debian trixie/main amd64 libcom-err2 amd64 1.47.2-3+b10 [25.0 kB]
+Step #0: Get:65 http://deb.debian.org/debian trixie/main amd64 libunistring5 amd64 1.3-2 [477 kB]
+Step #0: Get:66 http://deb.debian.org/debian trixie/main amd64 libidn2-0 amd64 2.3.8-2 [109 kB]
+Step #0: Get:67 http://deb.debian.org/debian trixie/main amd64 libp11-kit0 amd64 0.25.5-3 [425 kB]
+Step #0: Get:68 http://deb.debian.org/debian trixie/main amd64 libtasn1-6 amd64 4.20.0-2 [49.9 kB]
+Step #0: Get:69 http://deb.debian.org/debian trixie/main amd64 libgnutls30t64 amd64 3.8.9-3+deb13u2 [1468 kB]
+Step #0: Get:70 http://deb.debian.org/debian trixie/main amd64 libkrb5support0 amd64 1.21.3-5 [33.0 kB]
+Step #0: Get:71 http://deb.debian.org/debian trixie/main amd64 libk5crypto3 amd64 1.21.3-5 [81.5 kB]
+Step #0: Get:72 http://deb.debian.org/debian trixie/main amd64 libkeyutils1 amd64 1.6.3-6 [9456 B]
+Step #0: Get:73 http://deb.debian.org/debian trixie/main amd64 libkrb5-3 amd64 1.21.3-5 [326 kB]
+Step #0: Get:74 http://deb.debian.org/debian trixie/main amd64 libgssapi-krb5-2 amd64 1.21.3-5 [138 kB]
+Step #0: Get:75 http://deb.debian.org/debian trixie/main amd64 libcups2t64 amd64 2.4.10-3+deb13u2 [252 kB]
+Step #0: Get:76 http://deb.debian.org/debian trixie/main amd64 libdatrie1 amd64 0.2.13-3+b1 [38.1 kB]
+Step #0: Get:77 http://deb.debian.org/debian trixie/main amd64 libdrm-common all 2.4.124-2 [8288 B]
+Step #0: Get:78 http://deb.debian.org/debian trixie/main amd64 libdrm2 amd64 2.4.124-2 [39.0 kB]
+Step #0: Get:79 http://deb.debian.org/debian trixie/main amd64 libdrm-amdgpu1 amd64 2.4.124-2 [22.6 kB]
+Step #0: Get:80 http://deb.debian.org/debian trixie/main amd64 libpciaccess0 amd64 0.17-3+b3 [51.9 kB]
+Step #0: Get:81 http://deb.debian.org/debian trixie/main amd64 libdrm-intel1 amd64 2.4.124-2 [64.1 kB]
+Step #0: Get:82 http://deb.debian.org/debian trixie/main amd64 libedit2 amd64 3.1-20250104-1 [93.8 kB]
+Step #0: Get:83 http://deb.debian.org/debian trixie/main amd64 libelf1t64 amd64 0.192-4 [189 kB]
+Step #0: Get:84 http://deb.debian.org/debian trixie/main amd64 libfribidi0 amd64 1.0.16-1 [26.5 kB]
+Step #0: Get:85 http://deb.debian.org/debian trixie/main amd64 libwayland-server0 amd64 1.23.1-3 [34.4 kB]
+Step #0: Get:86 http://deb.debian.org/debian trixie/main amd64 libxml2 amd64 2.12.7+dfsg+really2.9.14-2.1+deb13u2 [698 kB]
+Step #0: Get:87 http://deb.debian.org/debian trixie/main amd64 libz3-4 amd64 4.13.3-1 [8560 kB]
+Step #0: Get:88 http://deb.debian.org/debian trixie/main amd64 libllvm19 amd64 1:19.1.7-3+b1 [26.0 MB]
+Step #0: Get:89 http://deb.debian.org/debian trixie/main amd64 libsensors-config all 1:3.6.2-2 [16.2 kB]
+Step #0: Get:90 http://deb.debian.org/debian trixie/main amd64 libsensors5 amd64 1:3.6.2-2 [37.5 kB]
+Step #0: Get:91 http://deb.debian.org/debian trixie/main amd64 libx11-xcb1 amd64 2:1.8.12-1 [247 kB]
+Step #0: Get:92 http://deb.debian.org/debian trixie/main amd64 libxcb-dri3-0 amd64 1.17.0-2+b1 [107 kB]
+Step #0: Get:93 http://deb.debian.org/debian trixie/main amd64 libxcb-present0 amd64 1.17.0-2+b1 [106 kB]
+Step #0: Get:94 http://deb.debian.org/debian trixie/main amd64 libxcb-randr0 amd64 1.17.0-2+b1 [117 kB]
+Step #0: Get:95 http://deb.debian.org/debian trixie/main amd64 libxcb-sync1 amd64 1.17.0-2+b1 [109 kB]
+Step #0: Get:96 http://deb.debian.org/debian trixie/main amd64 libxcb-xfixes0 amd64 1.17.0-2+b1 [109 kB]
+Step #0: Get:97 http://deb.debian.org/debian trixie/main amd64 libxshmfence1 amd64 1.3.3-1 [10.9 kB]
+Step #0: Get:98 http://deb.debian.org/debian trixie/main amd64 mesa-libgallium amd64 25.0.7-2 [9629 kB]
+Step #0: Get:99 http://deb.debian.org/debian trixie/main amd64 libgbm1 amd64 25.0.7-2 [44.4 kB]
+Step #0: Get:100 http://deb.debian.org/debian trixie/main amd64 libgraphite2-3 amd64 1.3.14-2+b1 [75.4 kB]
+Step #0: Get:101 http://deb.debian.org/debian trixie/main amd64 libharfbuzz0b amd64 10.2.0-1+b1 [479 kB]
+Step #0: Get:102 http://deb.debian.org/debian trixie/main amd64 libnspr4 amd64 2:4.36-1 [110 kB]
+Step #0: Get:103 http://deb.debian.org/debian trixie/main amd64 libnss3 amd64 2:3.110-1+deb13u1 [1395 kB]
+Step #0: Get:104 http://deb.debian.org/debian trixie/main amd64 libthai-data all 0.1.29-2 [168 kB]
+Step #0: Get:105 http://deb.debian.org/debian trixie/main amd64 libthai0 amd64 0.1.29-2+b1 [49.4 kB]
+Step #0: Get:106 http://deb.debian.org/debian trixie/main amd64 libpango-1.0-0 amd64 1.56.3-1 [226 kB]
+Step #0: Get:107 http://deb.debian.org/debian trixie/main amd64 libwayland-client0 amd64 1.23.1-3 [26.8 kB]
+Step #0: Get:108 http://deb.debian.org/debian trixie/main amd64 libxcomposite1 amd64 1:0.4.6-1 [16.3 kB]
+Step #0: Get:109 http://deb.debian.org/debian trixie/main amd64 libxdamage1 amd64 1:1.1.6-1+b2 [15.5 kB]
+Step #0: Get:110 http://deb.debian.org/debian trixie/main amd64 libxfixes3 amd64 1:6.0.0-2+b4 [20.2 kB]
+Step #0: Get:111 http://deb.debian.org/debian trixie/main amd64 xkb-data all 2.42-1 [790 kB]
+Step #0: Get:112 http://deb.debian.org/debian trixie/main amd64 libxkbcommon0 amd64 1.7.0-2 [113 kB]
+Step #0: Get:113 http://deb.debian.org/debian trixie/main amd64 libxrandr2 amd64 2:1.5.4-1+b3 [36.3 kB]
+Step #0: [91mdebconf: unable to initialize frontend: Dialog
+Step #0: debconf: (TERM is not set, so the dialog frontend is not usable.)
+Step #0: debconf: falling back to frontend: Readline
+Step #0: [0m[91mdebconf: unable to initialize frontend: Readline
+Step #0: debconf: (Can't locate Term/ReadLine.pm in @INC (you may need to install the Term::ReadLine module) (@INC entries checked: /etc/perl /usr/local/lib/x86_64-linux-gnu/perl/5.40.1 /usr/local/share/perl/5.40.1 /usr/lib/x86_64-linux-gnu/perl5/5.40 /usr/share/perl5 /usr/lib/x86_64-linux-gnu/perl-base /usr/lib/x86_64-linux-gnu/perl/5.40 /usr/share/perl/5.40 /usr/local/lib/site_perl) at /usr/share/perl5/Debconf/FrontEnd/Readline.pm line 8, <STDIN> line 113.)
+Step #0: debconf: falling back to frontend: Teletype
+Step #0: [0m[91mdebconf: unable to initialize frontend: Teletype
+Step #0: debconf: (This frontend requires a controlling tty.)
+Step #0: debconf: falling back to frontend: Noninteractive
+Step #0: [0mPreconfiguring packages ...
+Step #0: Fetched 114 MB in 1s (93.1 MB/s)
+Step #0: Selecting previously unselected package libexpat1:amd64.
+Step #0: (Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 5645 files and directories currently installed.)
+Step #0: Preparing to unpack .../000-libexpat1_2.7.1-2_amd64.deb ...
+Step #0: Unpacking libexpat1:amd64 (2.7.1-2) ...
+Step #0: Selecting previously unselected package at-spi2-common.
+Step #0: Preparing to unpack .../001-at-spi2-common_2.56.2-1+deb13u1_all.deb ...
+Step #0: Unpacking at-spi2-common (2.56.2-1+deb13u1) ...
+Step #0: Selecting previously unselected package libsframe1:amd64.
+Step #0: Preparing to unpack .../002-libsframe1_2.44-3_amd64.deb ...
+Step #0: Unpacking libsframe1:amd64 (2.44-3) ...
+Step #0: Selecting previously unselected package binutils-common:amd64.
+Step #0: Preparing to unpack .../003-binutils-common_2.44-3_amd64.deb ...
+Step #0: Unpacking binutils-common:amd64 (2.44-3) ...
+Step #0: Selecting previously unselected package libbinutils:amd64.
+Step #0: Preparing to unpack .../004-libbinutils_2.44-3_amd64.deb ...
+Step #0: Unpacking libbinutils:amd64 (2.44-3) ...
+Step #0: Selecting previously unselected package libgprofng0:amd64.
+Step #0: Preparing to unpack .../005-libgprofng0_2.44-3_amd64.deb ...
+Step #0: Unpacking libgprofng0:amd64 (2.44-3) ...
+Step #0: Selecting previously unselected package libctf-nobfd0:amd64.
+Step #0: Preparing to unpack .../006-libctf-nobfd0_2.44-3_amd64.deb ...
+Step #0: Unpacking libctf-nobfd0:amd64 (2.44-3) ...
+Step #0: Selecting previously unselected package libctf0:amd64.
+Step #0: Preparing to unpack .../007-libctf0_2.44-3_amd64.deb ...
+Step #0: Unpacking libctf0:amd64 (2.44-3) ...
+Step #0: Selecting previously unselected package libjansson4:amd64.
+Step #0: Preparing to unpack .../008-libjansson4_2.14-2+b3_amd64.deb ...
+Step #0: Unpacking libjansson4:amd64 (2.14-2+b3) ...
+Step #0: Selecting previously unselected package binutils-x86-64-linux-gnu.
+Step #0: Preparing to unpack .../009-binutils-x86-64-linux-gnu_2.44-3_amd64.deb ...
+Step #0: Unpacking binutils-x86-64-linux-gnu (2.44-3) ...
+Step #0: Selecting previously unselected package binutils.
+Step #0: Preparing to unpack .../010-binutils_2.44-3_amd64.deb ...
+Step #0: Unpacking binutils (2.44-3) ...
+Step #0: Selecting previously unselected package libisl23:amd64.
+Step #0: Preparing to unpack .../011-libisl23_0.27-1_amd64.deb ...
+Step #0: Unpacking libisl23:amd64 (0.27-1) ...
+Step #0: Selecting previously unselected package libmpfr6:amd64.
+Step #0: Preparing to unpack .../012-libmpfr6_4.2.2-1_amd64.deb ...
+Step #0: Unpacking libmpfr6:amd64 (4.2.2-1) ...
+Step #0: Selecting previously unselected package libmpc3:amd64.
+Step #0: Preparing to unpack .../013-libmpc3_1.3.1-1+b3_amd64.deb ...
+Step #0: Unpacking libmpc3:amd64 (1.3.1-1+b3) ...
+Step #0: Selecting previously unselected package cpp-14-x86-64-linux-gnu.
+Step #0: Preparing to unpack .../014-cpp-14-x86-64-linux-gnu_14.2.0-19_amd64.deb ...
+Step #0: Unpacking cpp-14-x86-64-linux-gnu (14.2.0-19) ...
+Step #0: Selecting previously unselected package cpp-14.
+Step #0: Preparing to unpack .../015-cpp-14_14.2.0-19_amd64.deb ...
+Step #0: Unpacking cpp-14 (14.2.0-19) ...
+Step #0: Selecting previously unselected package cpp-x86-64-linux-gnu.
+Step #0: Preparing to unpack .../016-cpp-x86-64-linux-gnu_4%3a14.2.0-1_amd64.deb ...
+Step #0: Unpacking cpp-x86-64-linux-gnu (4:14.2.0-1) ...
+Step #0: Selecting previously unselected package cpp.
+Step #0: Preparing to unpack .../017-cpp_4%3a14.2.0-1_amd64.deb ...
+Step #0: Unpacking cpp (4:14.2.0-1) ...
+Step #0: Selecting previously unselected package libbrotli1:amd64.
+Step #0: Preparing to unpack .../018-libbrotli1_1.1.0-2+b7_amd64.deb ...
+Step #0: Unpacking libbrotli1:amd64 (1.1.0-2+b7) ...
+Step #0: Selecting previously unselected package libpng16-16t64:amd64.
+Step #0: Preparing to unpack .../019-libpng16-16t64_1.6.48-1+deb13u3_amd64.deb ...
+Step #0: Unpacking libpng16-16t64:amd64 (1.6.48-1+deb13u3) ...
+Step #0: Selecting previously unselected package libfreetype6:amd64.
+Step #0: Preparing to unpack .../020-libfreetype6_2.13.3+dfsg-1_amd64.deb ...
+Step #0: Unpacking libfreetype6:amd64 (2.13.3+dfsg-1) ...
+Step #0: Selecting previously unselected package fonts-dejavu-mono.
+Step #0: Preparing to unpack .../021-fonts-dejavu-mono_2.37-8_all.deb ...
+Step #0: Unpacking fonts-dejavu-mono (2.37-8) ...
+Step #0: Selecting previously unselected package fonts-dejavu-core.
+Step #0: Preparing to unpack .../022-fonts-dejavu-core_2.37-8_all.deb ...
+Step #0: Unpacking fonts-dejavu-core (2.37-8) ...
+Step #0: Selecting previously unselected package fontconfig-config.
+Step #0: Preparing to unpack .../023-fontconfig-config_2.15.0-2.3_amd64.deb ...
+Step #0: Unpacking fontconfig-config (2.15.0-2.3) ...
+Step #0: Selecting previously unselected package libfontconfig1:amd64.
+Step #0: Preparing to unpack .../024-libfontconfig1_2.15.0-2.3_amd64.deb ...
+Step #0: Unpacking libfontconfig1:amd64 (2.15.0-2.3) ...
+Step #0: Selecting previously unselected package fontconfig.
+Step #0: Preparing to unpack .../025-fontconfig_2.15.0-2.3_amd64.deb ...
+Step #0: Unpacking fontconfig (2.15.0-2.3) ...
+Step #0: Selecting previously unselected package libcc1-0:amd64.
+Step #0: Preparing to unpack .../026-libcc1-0_14.2.0-19_amd64.deb ...
+Step #0: Unpacking libcc1-0:amd64 (14.2.0-19) ...
+Step #0: Selecting previously unselected package libgomp1:amd64.
+Step #0: Preparing to unpack .../027-libgomp1_14.2.0-19_amd64.deb ...
+Step #0: Unpacking libgomp1:amd64 (14.2.0-19) ...
+Step #0: Selecting previously unselected package libitm1:amd64.
+Step #0: Preparing to unpack .../028-libitm1_14.2.0-19_amd64.deb ...
+Step #0: Unpacking libitm1:amd64 (14.2.0-19) ...
+Step #0: Selecting previously unselected package libatomic1:amd64.
+Step #0: Preparing to unpack .../029-libatomic1_14.2.0-19_amd64.deb ...
+Step #0: Unpacking libatomic1:amd64 (14.2.0-19) ...
+Step #0: Selecting previously unselected package libasan8:amd64.
+Step #0: Preparing to unpack .../030-libasan8_14.2.0-19_amd64.deb ...
+Step #0: Unpacking libasan8:amd64 (14.2.0-19) ...
+Step #0: Selecting previously unselected package liblsan0:amd64.
+Step #0: Preparing to unpack .../031-liblsan0_14.2.0-19_amd64.deb ...
+Step #0: Unpacking liblsan0:amd64 (14.2.0-19) ...
+Step #0: Selecting previously unselected package libtsan2:amd64.
+Step #0: Preparing to unpack .../032-libtsan2_14.2.0-19_amd64.deb ...
+Step #0: Unpacking libtsan2:amd64 (14.2.0-19) ...
+Step #0: Selecting previously unselected package libubsan1:amd64.
+Step #0: Preparing to unpack .../033-libubsan1_14.2.0-19_amd64.deb ...
+Step #0: Unpacking libubsan1:amd64 (14.2.0-19) ...
+Step #0: Selecting previously unselected package libhwasan0:amd64.
+Step #0: Preparing to unpack .../034-libhwasan0_14.2.0-19_amd64.deb ...
+Step #0: Unpacking libhwasan0:amd64 (14.2.0-19) ...
+Step #0: Selecting previously unselected package libquadmath0:amd64.
+Step #0: Preparing to unpack .../035-libquadmath0_14.2.0-19_amd64.deb ...
+Step #0: Unpacking libquadmath0:amd64 (14.2.0-19) ...
+Step #0: Selecting previously unselected package libgcc-14-dev:amd64.
+Step #0: Preparing to unpack .../036-libgcc-14-dev_14.2.0-19_amd64.deb ...
+Step #0: Unpacking libgcc-14-dev:amd64 (14.2.0-19) ...
+Step #0: Selecting previously unselected package gcc-14-x86-64-linux-gnu.
+Step #0: Preparing to unpack .../037-gcc-14-x86-64-linux-gnu_14.2.0-19_amd64.deb ...
+Step #0: Unpacking gcc-14-x86-64-linux-gnu (14.2.0-19) ...
+Step #0: Selecting previously unselected package gcc-14.
+Step #0: Preparing to unpack .../038-gcc-14_14.2.0-19_amd64.deb ...
+Step #0: Unpacking gcc-14 (14.2.0-19) ...
+Step #0: Selecting previously unselected package gcc-x86-64-linux-gnu.
+Step #0: Preparing to unpack .../039-gcc-x86-64-linux-gnu_4%3a14.2.0-1_amd64.deb ...
+Step #0: Unpacking gcc-x86-64-linux-gnu (4:14.2.0-1) ...
+Step #0: Selecting previously unselected package gcc.
+Step #0: Preparing to unpack .../040-gcc_4%3a14.2.0-1_amd64.deb ...
+Step #0: Unpacking gcc (4:14.2.0-1) ...
+Step #0: Selecting previously unselected package libasound2-data.
+Step #0: Preparing to unpack .../041-libasound2-data_1.2.14-1_all.deb ...
+Step #0: Unpacking libasound2-data (1.2.14-1) ...
+Step #0: Selecting previously unselected package libasound2t64:amd64.
+Step #0: Preparing to unpack .../042-libasound2t64_1.2.14-1_amd64.deb ...
+Step #0: Unpacking libasound2t64:amd64 (1.2.14-1) ...
+Step #0: Selecting previously unselected package libglib2.0-0t64:amd64.
+Step #0: Preparing to unpack .../043-libglib2.0-0t64_2.84.4-3~deb13u2_amd64.deb ...
+Step #0: Unpacking libglib2.0-0t64:amd64 (2.84.4-3~deb13u2) ...
+Step #0: Selecting previously unselected package libatk1.0-0t64:amd64.
+Step #0: Preparing to unpack .../044-libatk1.0-0t64_2.56.2-1+deb13u1_amd64.deb ...
+Step #0: Unpacking libatk1.0-0t64:amd64 (2.56.2-1+deb13u1) ...
+Step #0: Selecting previously unselected package libdbus-1-3:amd64.
+Step #0: Preparing to unpack .../045-libdbus-1-3_1.16.2-2_amd64.deb ...
+Step #0: Unpacking libdbus-1-3:amd64 (1.16.2-2) ...
+Step #0: Selecting previously unselected package libxau6:amd64.
+Step #0: Preparing to unpack .../046-libxau6_1%3a1.0.11-1_amd64.deb ...
+Step #0: Unpacking libxau6:amd64 (1:1.0.11-1) ...
+Step #0: Selecting previously unselected package libxdmcp6:amd64.
+Step #0: Preparing to unpack .../047-libxdmcp6_1%3a1.1.5-1_amd64.deb ...
+Step #0: Unpacking libxdmcp6:amd64 (1:1.1.5-1) ...
+Step #0: Selecting previously unselected package libxcb1:amd64.
+Step #0: Preparing to unpack .../048-libxcb1_1.17.0-2+b1_amd64.deb ...
+Step #0: Unpacking libxcb1:amd64 (1.17.0-2+b1) ...
+Step #0: Selecting previously unselected package libx11-data.
+Step #0: Preparing to unpack .../049-libx11-data_2%3a1.8.12-1_all.deb ...
+Step #0: Unpacking libx11-data (2:1.8.12-1) ...
+Step #0: Selecting previously unselected package libx11-6:amd64.
+Step #0: Preparing to unpack .../050-libx11-6_2%3a1.8.12-1_amd64.deb ...
+Step #0: Unpacking libx11-6:amd64 (2:1.8.12-1) ...
+Step #0: Selecting previously unselected package libxext6:amd64.
+Step #0: Preparing to unpack .../051-libxext6_2%3a1.3.4-1+b3_amd64.deb ...
+Step #0: Unpacking libxext6:amd64 (2:1.3.4-1+b3) ...
+Step #0: Selecting previously unselected package libxi6:amd64.
+Step #0: Preparing to unpack .../052-libxi6_2%3a1.8.2-1_amd64.deb ...
+Step #0: Unpacking libxi6:amd64 (2:1.8.2-1) ...
+Step #0: Selecting previously unselected package libatspi2.0-0t64:amd64.
+Step #0: Preparing to unpack .../053-libatspi2.0-0t64_2.56.2-1+deb13u1_amd64.deb ...
+Step #0: Unpacking libatspi2.0-0t64:amd64 (2.56.2-1+deb13u1) ...
+Step #0: Selecting previously unselected package libatk-bridge2.0-0t64:amd64.
+Step #0: Preparing to unpack .../054-libatk-bridge2.0-0t64_2.56.2-1+deb13u1_amd64.deb ...
+Step #0: Unpacking libatk-bridge2.0-0t64:amd64 (2.56.2-1+deb13u1) ...
+Step #0: Selecting previously unselected package libavahi-common-data:amd64.
+Step #0: Preparing to unpack .../055-libavahi-common-data_0.8-16_amd64.deb ...
+Step #0: Unpacking libavahi-common-data:amd64 (0.8-16) ...
+Step #0: Selecting previously unselected package libavahi-common3:amd64.
+Step #0: Preparing to unpack .../056-libavahi-common3_0.8-16_amd64.deb ...
+Step #0: Unpacking libavahi-common3:amd64 (0.8-16) ...
+Step #0: Selecting previously unselected package libavahi-client3:amd64.
+Step #0: Preparing to unpack .../057-libavahi-client3_0.8-16_amd64.deb ...
+Step #0: Unpacking libavahi-client3:amd64 (0.8-16) ...
+Step #0: Selecting previously unselected package libpixman-1-0:amd64.
+Step #0: Preparing to unpack .../058-libpixman-1-0_0.44.0-3_amd64.deb ...
+Step #0: Unpacking libpixman-1-0:amd64 (0.44.0-3) ...
+Step #0: Selecting previously unselected package libxcb-render0:amd64.
+Step #0: Preparing to unpack .../059-libxcb-render0_1.17.0-2+b1_amd64.deb ...
+Step #0: Unpacking libxcb-render0:amd64 (1.17.0-2+b1) ...
+Step #0: Selecting previously unselected package libxcb-shm0:amd64.
+Step #0: Preparing to unpack .../060-libxcb-shm0_1.17.0-2+b1_amd64.deb ...
+Step #0: Unpacking libxcb-shm0:amd64 (1.17.0-2+b1) ...
+Step #0: Selecting previously unselected package libxrender1:amd64.
+Step #0: Preparing to unpack .../061-libxrender1_1%3a0.9.12-1_amd64.deb ...
+Step #0: Unpacking libxrender1:amd64 (1:0.9.12-1) ...
+Step #0: Selecting previously unselected package libcairo2:amd64.
+Step #0: Preparing to unpack .../062-libcairo2_1.18.4-1+b1_amd64.deb ...
+Step #0: Unpacking libcairo2:amd64 (1.18.4-1+b1) ...
+Step #0: Selecting previously unselected package libcom-err2:amd64.
+Step #0: Preparing to unpack .../063-libcom-err2_1.47.2-3+b10_amd64.deb ...
+Step #0: Unpacking libcom-err2:amd64 (1.47.2-3+b10) ...
+Step #0: Selecting previously unselected package libunistring5:amd64.
+Step #0: Preparing to unpack .../064-libunistring5_1.3-2_amd64.deb ...
+Step #0: Unpacking libunistring5:amd64 (1.3-2) ...
+Step #0: Selecting previously unselected package libidn2-0:amd64.
+Step #0: Preparing to unpack .../065-libidn2-0_2.3.8-2_amd64.deb ...
+Step #0: Unpacking libidn2-0:amd64 (2.3.8-2) ...
+Step #0: Selecting previously unselected package libp11-kit0:amd64.
+Step #0: Preparing to unpack .../066-libp11-kit0_0.25.5-3_amd64.deb ...
+Step #0: Unpacking libp11-kit0:amd64 (0.25.5-3) ...
+Step #0: Selecting previously unselected package libtasn1-6:amd64.
+Step #0: Preparing to unpack .../067-libtasn1-6_4.20.0-2_amd64.deb ...
+Step #0: Unpacking libtasn1-6:amd64 (4.20.0-2) ...
+Step #0: Selecting previously unselected package libgnutls30t64:amd64.
+Step #0: Preparing to unpack .../068-libgnutls30t64_3.8.9-3+deb13u2_amd64.deb ...
+Step #0: Unpacking libgnutls30t64:amd64 (3.8.9-3+deb13u2) ...
+Step #0: Selecting previously unselected package libkrb5support0:amd64.
+Step #0: Preparing to unpack .../069-libkrb5support0_1.21.3-5_amd64.deb ...
+Step #0: Unpacking libkrb5support0:amd64 (1.21.3-5) ...
+Step #0: Selecting previously unselected package libk5crypto3:amd64.
+Step #0: Preparing to unpack .../070-libk5crypto3_1.21.3-5_amd64.deb ...
+Step #0: Unpacking libk5crypto3:amd64 (1.21.3-5) ...
+Step #0: Selecting previously unselected package libkeyutils1:amd64.
+Step #0: Preparing to unpack .../071-libkeyutils1_1.6.3-6_amd64.deb ...
+Step #0: Unpacking libkeyutils1:amd64 (1.6.3-6) ...
+Step #0: Selecting previously unselected package libkrb5-3:amd64.
+Step #0: Preparing to unpack .../072-libkrb5-3_1.21.3-5_amd64.deb ...
+Step #0: Unpacking libkrb5-3:amd64 (1.21.3-5) ...
+Step #0: Selecting previously unselected package libgssapi-krb5-2:amd64.
+Step #0: Preparing to unpack .../073-libgssapi-krb5-2_1.21.3-5_amd64.deb ...
+Step #0: Unpacking libgssapi-krb5-2:amd64 (1.21.3-5) ...
+Step #0: Selecting previously unselected package libcups2t64:amd64.
+Step #0: Preparing to unpack .../074-libcups2t64_2.4.10-3+deb13u2_amd64.deb ...
+Step #0: Unpacking libcups2t64:amd64 (2.4.10-3+deb13u2) ...
+Step #0: Selecting previously unselected package libdatrie1:amd64.
+Step #0: Preparing to unpack .../075-libdatrie1_0.2.13-3+b1_amd64.deb ...
+Step #0: Unpacking libdatrie1:amd64 (0.2.13-3+b1) ...
+Step #0: Selecting previously unselected package libdrm-common.
+Step #0: Preparing to unpack .../076-libdrm-common_2.4.124-2_all.deb ...
+Step #0: Unpacking libdrm-common (2.4.124-2) ...
+Step #0: Selecting previously unselected package libdrm2:amd64.
+Step #0: Preparing to unpack .../077-libdrm2_2.4.124-2_amd64.deb ...
+Step #0: Unpacking libdrm2:amd64 (2.4.124-2) ...
+Step #0: Selecting previously unselected package libdrm-amdgpu1:amd64.
+Step #0: Preparing to unpack .../078-libdrm-amdgpu1_2.4.124-2_amd64.deb ...
+Step #0: Unpacking libdrm-amdgpu1:amd64 (2.4.124-2) ...
+Step #0: Selecting previously unselected package libpciaccess0:amd64.
+Step #0: Preparing to unpack .../079-libpciaccess0_0.17-3+b3_amd64.deb ...
+Step #0: Unpacking libpciaccess0:amd64 (0.17-3+b3) ...
+Step #0: Selecting previously unselected package libdrm-intel1:amd64.
+Step #0: Preparing to unpack .../080-libdrm-intel1_2.4.124-2_amd64.deb ...
+Step #0: Unpacking libdrm-intel1:amd64 (2.4.124-2) ...
+Step #0: Selecting previously unselected package libedit2:amd64.
+Step #0: Preparing to unpack .../081-libedit2_3.1-20250104-1_amd64.deb ...
+Step #0: Unpacking libedit2:amd64 (3.1-20250104-1) ...
+Step #0: Selecting previously unselected package libelf1t64:amd64.
+Step #0: Preparing to unpack .../082-libelf1t64_0.192-4_amd64.deb ...
+Step #0: Unpacking libelf1t64:amd64 (0.192-4) ...
+Step #0: Selecting previously unselected package libfribidi0:amd64.
+Step #0: Preparing to unpack .../083-libfribidi0_1.0.16-1_amd64.deb ...
+Step #0: Unpacking libfribidi0:amd64 (1.0.16-1) ...
+Step #0: Selecting previously unselected package libwayland-server0:amd64.
+Step #0: Preparing to unpack .../084-libwayland-server0_1.23.1-3_amd64.deb ...
+Step #0: Unpacking libwayland-server0:amd64 (1.23.1-3) ...
+Step #0: Selecting previously unselected package libxml2:amd64.
+Step #0: Preparing to unpack .../085-libxml2_2.12.7+dfsg+really2.9.14-2.1+deb13u2_amd64.deb ...
+Step #0: Unpacking libxml2:amd64 (2.12.7+dfsg+really2.9.14-2.1+deb13u2) ...
+Step #0: Selecting previously unselected package libz3-4:amd64.
+Step #0: Preparing to unpack .../086-libz3-4_4.13.3-1_amd64.deb ...
+Step #0: Unpacking libz3-4:amd64 (4.13.3-1) ...
+Step #0: Selecting previously unselected package libllvm19:amd64.
+Step #0: Preparing to unpack .../087-libllvm19_1%3a19.1.7-3+b1_amd64.deb ...
+Step #0: Unpacking libllvm19:amd64 (1:19.1.7-3+b1) ...
+Step #0: Selecting previously unselected package libsensors-config.
+Step #0: Preparing to unpack .../088-libsensors-config_1%3a3.6.2-2_all.deb ...
+Step #0: Unpacking libsensors-config (1:3.6.2-2) ...
+Step #0: Selecting previously unselected package libsensors5:amd64.
+Step #0: Preparing to unpack .../089-libsensors5_1%3a3.6.2-2_amd64.deb ...
+Step #0: Unpacking libsensors5:amd64 (1:3.6.2-2) ...
+Step #0: Selecting previously unselected package libx11-xcb1:amd64.
+Step #0: Preparing to unpack .../090-libx11-xcb1_2%3a1.8.12-1_amd64.deb ...
+Step #0: Unpacking libx11-xcb1:amd64 (2:1.8.12-1) ...
+Step #0: Selecting previously unselected package libxcb-dri3-0:amd64.
+Step #0: Preparing to unpack .../091-libxcb-dri3-0_1.17.0-2+b1_amd64.deb ...
+Step #0: Unpacking libxcb-dri3-0:amd64 (1.17.0-2+b1) ...
+Step #0: Selecting previously unselected package libxcb-present0:amd64.
+Step #0: Preparing to unpack .../092-libxcb-present0_1.17.0-2+b1_amd64.deb ...
+Step #0: Unpacking libxcb-present0:amd64 (1.17.0-2+b1) ...
+Step #0: Selecting previously unselected package libxcb-randr0:amd64.
+Step #0: Preparing to unpack .../093-libxcb-randr0_1.17.0-2+b1_amd64.deb ...
+Step #0: Unpacking libxcb-randr0:amd64 (1.17.0-2+b1) ...
+Step #0: Selecting previously unselected package libxcb-sync1:amd64.
+Step #0: Preparing to unpack .../094-libxcb-sync1_1.17.0-2+b1_amd64.deb ...
+Step #0: Unpacking libxcb-sync1:amd64 (1.17.0-2+b1) ...
+Step #0: Selecting previously unselected package libxcb-xfixes0:amd64.
+Step #0: Preparing to unpack .../095-libxcb-xfixes0_1.17.0-2+b1_amd64.deb ...
+Step #0: Unpacking libxcb-xfixes0:amd64 (1.17.0-2+b1) ...
+Step #0: Selecting previously unselected package libxshmfence1:amd64.
+Step #0: Preparing to unpack .../096-libxshmfence1_1.3.3-1_amd64.deb ...
+Step #0: Unpacking libxshmfence1:amd64 (1.3.3-1) ...
+Step #0: Selecting previously unselected package mesa-libgallium:amd64.
+Step #0: Preparing to unpack .../097-mesa-libgallium_25.0.7-2_amd64.deb ...
+Step #0: Unpacking mesa-libgallium:amd64 (25.0.7-2) ...
+Step #0: Selecting previously unselected package libgbm1:amd64.
+Step #0: Preparing to unpack .../098-libgbm1_25.0.7-2_amd64.deb ...
+Step #0: Unpacking libgbm1:amd64 (25.0.7-2) ...
+Step #0: Selecting previously unselected package libgraphite2-3:amd64.
+Step #0: Preparing to unpack .../099-libgraphite2-3_1.3.14-2+b1_amd64.deb ...
+Step #0: Unpacking libgraphite2-3:amd64 (1.3.14-2+b1) ...
+Step #0: Selecting previously unselected package libharfbuzz0b:amd64.
+Step #0: Preparing to unpack .../100-libharfbuzz0b_10.2.0-1+b1_amd64.deb ...
+Step #0: Unpacking libharfbuzz0b:amd64 (10.2.0-1+b1) ...
+Step #0: Selecting previously unselected package libnspr4:amd64.
+Step #0: Preparing to unpack .../101-libnspr4_2%3a4.36-1_amd64.deb ...
+Step #0: Unpacking libnspr4:amd64 (2:4.36-1) ...
+Step #0: Selecting previously unselected package libnss3:amd64.
+Step #0: Preparing to unpack .../102-libnss3_2%3a3.110-1+deb13u1_amd64.deb ...
+Step #0: Unpacking libnss3:amd64 (2:3.110-1+deb13u1) ...
+Step #0: Selecting previously unselected package libthai-data.
+Step #0: Preparing to unpack .../103-libthai-data_0.1.29-2_all.deb ...
+Step #0: Unpacking libthai-data (0.1.29-2) ...
+Step #0: Selecting previously unselected package libthai0:amd64.
+Step #0: Preparing to unpack .../104-libthai0_0.1.29-2+b1_amd64.deb ...
+Step #0: Unpacking libthai0:amd64 (0.1.29-2+b1) ...
+Step #0: Selecting previously unselected package libpango-1.0-0:amd64.
+Step #0: Preparing to unpack .../105-libpango-1.0-0_1.56.3-1_amd64.deb ...
+Step #0: Unpacking libpango-1.0-0:amd64 (1.56.3-1) ...
+Step #0: Selecting previously unselected package libwayland-client0:amd64.
+Step #0: Preparing to unpack .../106-libwayland-client0_1.23.1-3_amd64.deb ...
+Step #0: Unpacking libwayland-client0:amd64 (1.23.1-3) ...
+Step #0: Selecting previously unselected package libxcomposite1:amd64.
+Step #0: Preparing to unpack .../107-libxcomposite1_1%3a0.4.6-1_amd64.deb ...
+Step #0: Unpacking libxcomposite1:amd64 (1:0.4.6-1) ...
+Step #0: Selecting previously unselected package libxdamage1:amd64.
+Step #0: Preparing to unpack .../108-libxdamage1_1%3a1.1.6-1+b2_amd64.deb ...
+Step #0: Unpacking libxdamage1:amd64 (1:1.1.6-1+b2) ...
+Step #0: Selecting previously unselected package libxfixes3:amd64.
+Step #0: Preparing to unpack .../109-libxfixes3_1%3a6.0.0-2+b4_amd64.deb ...
+Step #0: Unpacking libxfixes3:amd64 (1:6.0.0-2+b4) ...
+Step #0: Selecting previously unselected package xkb-data.
+Step #0: Preparing to unpack .../110-xkb-data_2.42-1_all.deb ...
+Step #0: Unpacking xkb-data (2.42-1) ...
+Step #0: Selecting previously unselected package libxkbcommon0:amd64.
+Step #0: Preparing to unpack .../111-libxkbcommon0_1.7.0-2_amd64.deb ...
+Step #0: Unpacking libxkbcommon0:amd64 (1.7.0-2) ...
+Step #0: Selecting previously unselected package libxrandr2:amd64.
+Step #0: Preparing to unpack .../112-libxrandr2_2%3a1.5.4-1+b3_amd64.deb ...
+Step #0: Unpacking libxrandr2:amd64 (2:1.5.4-1+b3) ...
+Step #0: Setting up libexpat1:amd64 (2.7.1-2) ...
+Step #0: Setting up libgraphite2-3:amd64 (1.3.14-2+b1) ...
+Step #0: Setting up libpixman-1-0:amd64 (0.44.0-3) ...
+Step #0: Setting up libwayland-server0:amd64 (1.23.1-3) ...
+Step #0: Setting up libpciaccess0:amd64 (0.17-3+b3) ...
+Step #0: Setting up libxau6:amd64 (1:1.0.11-1) ...
+Step #0: Setting up libxdmcp6:amd64 (1:1.1.5-1) ...
+Step #0: Setting up libkeyutils1:amd64 (1.6.3-6) ...
+Step #0: Setting up libxcb1:amd64 (1.17.0-2+b1) ...
+Step #0: Setting up libxcb-xfixes0:amd64 (1.17.0-2+b1) ...
+Step #0: Setting up libdatrie1:amd64 (0.2.13-3+b1) ...
+Step #0: Setting up libxcb-render0:amd64 (1.17.0-2+b1) ...
+Step #0: Setting up libbrotli1:amd64 (1.1.0-2+b7) ...
+Step #0: Setting up libedit2:amd64 (3.1-20250104-1) ...
+Step #0: Setting up binutils-common:amd64 (2.44-3) ...
+Step #0: Setting up libsensors-config (1:3.6.2-2) ...
+Step #0: Setting up libctf-nobfd0:amd64 (2.44-3) ...
+Step #0: Setting up xkb-data (2.42-1) ...
+Step #0: Setting up libxcb-shm0:amd64 (1.17.0-2+b1) ...
+Step #0: Setting up libcom-err2:amd64 (1.47.2-3+b10) ...
+Step #0: Setting up libgomp1:amd64 (14.2.0-19) ...
+Step #0: Setting up libsframe1:amd64 (2.44-3) ...
+Step #0: Setting up libelf1t64:amd64 (0.192-4) ...
+Step #0: Setting up libjansson4:amd64 (2.14-2+b3) ...
+Step #0: Setting up libkrb5support0:amd64 (1.21.3-5) ...
+Step #0: Setting up libxcb-present0:amd64 (1.17.0-2+b1) ...
+Step #0: Setting up libasound2-data (1.2.14-1) ...
+Step #0: Setting up libz3-4:amd64 (4.13.3-1) ...
+Step #0: Setting up libasound2t64:amd64 (1.2.14-1) ...
+Step #0: Setting up libx11-data (2:1.8.12-1) ...
+Step #0: Setting up libmpfr6:amd64 (4.2.2-1) ...
+Step #0: Setting up libnspr4:amd64 (2:4.36-1) ...
+Step #0: Setting up libxcb-sync1:amd64 (1.17.0-2+b1) ...
+Step #0: Setting up libavahi-common-data:amd64 (0.8-16) ...
+Step #0: Setting up libdbus-1-3:amd64 (1.16.2-2) ...
+Step #0: Setting up libfribidi0:amd64 (1.0.16-1) ...
+Step #0: Setting up libquadmath0:amd64 (14.2.0-19) ...
+Step #0: Setting up libp11-kit0:amd64 (0.25.5-3) ...
+Step #0: Setting up libunistring5:amd64 (1.3-2) ...
+Step #0: Setting up fonts-dejavu-mono (2.37-8) ...
+Step #0: Setting up libpng16-16t64:amd64 (1.6.48-1+deb13u3) ...
+Step #0: Setting up libmpc3:amd64 (1.3.1-1+b3) ...
+Step #0: Setting up libatomic1:amd64 (14.2.0-19) ...
+Step #0: Setting up fonts-dejavu-core (2.37-8) ...
+Step #0: Setting up libsensors5:amd64 (1:3.6.2-2) ...
+Step #0: Setting up libk5crypto3:amd64 (1.21.3-5) ...
+Step #0: Setting up libubsan1:amd64 (14.2.0-19) ...
+Step #0: Setting up libxshmfence1:amd64 (1.3.3-1) ...
+Step #0: Setting up libhwasan0:amd64 (14.2.0-19) ...
+Step #0: Setting up at-spi2-common (2.56.2-1+deb13u1) ...
+Step #0: Setting up libxcb-randr0:amd64 (1.17.0-2+b1) ...
+Step #0: Setting up libasan8:amd64 (14.2.0-19) ...
+Step #0: Setting up libtasn1-6:amd64 (4.20.0-2) ...
+Step #0: Setting up libx11-6:amd64 (2:1.8.12-1) ...
+Step #0: Setting up libthai-data (0.1.29-2) ...
+Step #0: Setting up libkrb5-3:amd64 (1.21.3-5) ...
+Step #0: Setting up libtsan2:amd64 (14.2.0-19) ...
+Step #0: Setting up libbinutils:amd64 (2.44-3) ...
+Step #0: Setting up libisl23:amd64 (0.27-1) ...
+Step #0: Setting up libdrm-common (2.4.124-2) ...
+Step #0: Setting up libxcomposite1:amd64 (1:0.4.6-1) ...
+Step #0: Setting up libxml2:amd64 (2.12.7+dfsg+really2.9.14-2.1+deb13u2) ...
+Step #0: Setting up libcc1-0:amd64 (14.2.0-19) ...
+Step #0: Setting up liblsan0:amd64 (14.2.0-19) ...
+Step #0: Setting up libitm1:amd64 (14.2.0-19) ...
+Step #0: Setting up libxkbcommon0:amd64 (1.7.0-2) ...
+Step #0: Setting up libwayland-client0:amd64 (1.23.1-3) ...
+Step #0: Setting up libctf0:amd64 (2.44-3) ...
+Step #0: Setting up libxcb-dri3-0:amd64 (1.17.0-2+b1) ...
+Step #0: Setting up libllvm19:amd64 (1:19.1.7-3+b1) ...
+Step #0: Setting up libx11-xcb1:amd64 (2:1.8.12-1) ...
+Step #0: Setting up libxdamage1:amd64 (1:1.1.6-1+b2) ...
+Step #0: Setting up libxrender1:amd64 (1:0.9.12-1) ...
+Step #0: Setting up fontconfig-config (2.15.0-2.3) ...
+Step #0: debconf: unable to initialize frontend: Dialog
+Step #0: debconf: (TERM is not set, so the dialog frontend is not usable.)
+Step #0: debconf: falling back to frontend: Readline
+Step #0: debconf: unable to initialize frontend: Readline
+Step #0: debconf: (Can't locate Term/ReadLine.pm in @INC (you may need to install the Term::ReadLine module) (@INC entries checked: /etc/perl /usr/local/lib/x86_64-linux-gnu/perl/5.40.1 /usr/local/share/perl/5.40.1 /usr/lib/x86_64-linux-gnu/perl5/5.40 /usr/share/perl5 /usr/lib/x86_64-linux-gnu/perl-base /usr/lib/x86_64-linux-gnu/perl/5.40 /usr/share/perl/5.40 /usr/local/lib/site_perl) at /usr/share/perl5/Debconf/FrontEnd/Readline.pm line 8.)
+Step #0: debconf: falling back to frontend: Teletype
+Step #0: debconf: unable to initialize frontend: Teletype
+Step #0: debconf: (This frontend requires a controlling tty.)
+Step #0: debconf: falling back to frontend: Noninteractive
+Step #0: Setting up libavahi-common3:amd64 (0.8-16) ...
+Step #0: Setting up libxext6:amd64 (2:1.3.4-1+b3) ...
+Step #0: Setting up libidn2-0:amd64 (2.3.8-2) ...
+Step #0: Setting up libnss3:amd64 (2:3.110-1+deb13u1) ...
+Step #0: Setting up libthai0:amd64 (0.1.29-2+b1) ...
+Step #0: Setting up libglib2.0-0t64:amd64 (2.84.4-3~deb13u2) ...
+Step #0: No schema files found: doing nothing.
+Step #0: Setting up libgprofng0:amd64 (2.44-3) ...
+Step #0: Setting up libfreetype6:amd64 (2.13.3+dfsg-1) ...
+Step #0: Setting up libxfixes3:amd64 (1:6.0.0-2+b4) ...
+Step #0: Setting up libgssapi-krb5-2:amd64 (1.21.3-5) ...
+Step #0: Setting up libxrandr2:amd64 (2:1.5.4-1+b3) ...
+Step #0: Setting up cpp-14-x86-64-linux-gnu (14.2.0-19) ...
+Step #0: Setting up cpp-14 (14.2.0-19) ...
+Step #0: Setting up libdrm2:amd64 (2.4.124-2) ...
+Step #0: Setting up libharfbuzz0b:amd64 (10.2.0-1+b1) ...
+Step #0: Setting up libfontconfig1:amd64 (2.15.0-2.3) ...
+Step #0: Setting up libgcc-14-dev:amd64 (14.2.0-19) ...
+Step #0: Setting up libavahi-client3:amd64 (0.8-16) ...
+Step #0: Setting up binutils-x86-64-linux-gnu (2.44-3) ...
+Step #0: Setting up libdrm-amdgpu1:amd64 (2.4.124-2) ...
+Step #0: Setting up cpp-x86-64-linux-gnu (4:14.2.0-1) ...
+Step #0: Setting up libgnutls30t64:amd64 (3.8.9-3+deb13u2) ...
+Step #0: Setting up fontconfig (2.15.0-2.3) ...
+Step #0: Regenerating fonts cache... done.
+Step #0: Setting up libatk1.0-0t64:amd64 (2.56.2-1+deb13u1) ...
+Step #0: Setting up libxi6:amd64 (2:1.8.2-1) ...
+Step #0: Setting up libpango-1.0-0:amd64 (1.56.3-1) ...
+Step #0: Setting up libdrm-intel1:amd64 (2.4.124-2) ...
+Step #0: Setting up binutils (2.44-3) ...
+Step #0: Setting up libcairo2:amd64 (1.18.4-1+b1) ...
+Step #0: Setting up libatspi2.0-0t64:amd64 (2.56.2-1+deb13u1) ...
+Step #0: Setting up cpp (4:14.2.0-1) ...
+Step #0: Setting up gcc-14-x86-64-linux-gnu (14.2.0-19) ...
+Step #0: Setting up libcups2t64:amd64 (2.4.10-3+deb13u2) ...
+Step #0: Setting up libatk-bridge2.0-0t64:amd64 (2.56.2-1+deb13u1) ...
+Step #0: Setting up mesa-libgallium:amd64 (25.0.7-2) ...
+Step #0: Setting up gcc-x86-64-linux-gnu (4:14.2.0-1) ...
+Step #0: Setting up libgbm1:amd64 (25.0.7-2) ...
+Step #0: Setting up gcc-14 (14.2.0-19) ...
+Step #0: Setting up gcc (4:14.2.0-1) ...
+Step #0: Processing triggers for libc-bin (2.41-12+deb13u1) ...
+Step #0: Removing intermediate container 6e4516bc3fe9
+Step #0:  ---> f08f7a0752b2
+Step #0: Step 12/20 : COPY requirements.txt .
+Step #0:  ---> 35a693edc2b3
+Step #0: Step 13/20 : RUN pip install --no-cache-dir -r requirements.txt
+Step #0:  ---> Running in ead1c4e2e0c4
+Step #0: Collecting google-adk>=1.2.0 (from -r requirements.txt (line 2))
+Step #0:   Downloading google_adk-1.27.1-py3-none-any.whl.metadata (14 kB)
+Step #0: Collecting google-genai>=1.5.0 (from -r requirements.txt (line 3))
+Step #0:   Downloading google_genai-1.67.0-py3-none-any.whl.metadata (52 kB)
+Step #0: Collecting fastapi>=0.115.0 (from -r requirements.txt (line 6))
+Step #0:   Downloading fastapi-0.135.1-py3-none-any.whl.metadata (30 kB)
+Step #0: Collecting uvicorn>=0.34.0 (from uvicorn[standard]>=0.34.0->-r requirements.txt (line 7))
+Step #0:   Downloading uvicorn-0.41.0-py3-none-any.whl.metadata (6.7 kB)
+Step #0: Collecting websockets>=14.0 (from -r requirements.txt (line 8))
+Step #0:   Downloading websockets-16.0-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl.metadata (6.8 kB)
+Step #0: Collecting firebase-admin>=6.6.0 (from -r requirements.txt (line 11))
+Step #0:   Downloading firebase_admin-7.2.0-py3-none-any.whl.metadata (1.7 kB)
+Step #0: Collecting Pillow>=11.0.0 (from -r requirements.txt (line 14))
+Step #0:   Downloading pillow-12.1.1-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (8.8 kB)
+Step #0: Collecting python-dotenv>=1.0.1 (from -r requirements.txt (line 17))
+Step #0:   Downloading python_dotenv-1.2.2-py3-none-any.whl.metadata (27 kB)
+Step #0: Collecting pydantic>=2.10.0 (from -r requirements.txt (line 18))
+Step #0:   Downloading pydantic-2.12.5-py3-none-any.whl.metadata (90 kB)
+Step #0: Collecting playwright>=1.49.0 (from -r requirements.txt (line 21))
+Step #0:   Downloading playwright-1.58.0-py3-none-manylinux1_x86_64.whl.metadata (3.5 kB)
+Step #0: Collecting PyYAML<7.0.0,>=6.0.2 (from google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.4 kB)
+Step #0: Collecting aiosqlite>=0.21.0 (from google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading aiosqlite-0.22.1-py3-none-any.whl.metadata (4.3 kB)
+Step #0: Collecting anyio<5.0.0,>=4.9.0 (from google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading anyio-4.12.1-py3-none-any.whl.metadata (4.3 kB)
+Step #0: Collecting authlib<2.0.0,>=1.6.6 (from google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading authlib-1.6.9-py2.py3-none-any.whl.metadata (9.8 kB)
+Step #0: Collecting click<9.0.0,>=8.1.8 (from google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading click-8.3.1-py3-none-any.whl.metadata (2.6 kB)
+Step #0: Collecting google-api-python-client<3.0.0,>=2.157.0 (from google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading google_api_python_client-2.192.0-py3-none-any.whl.metadata (7.0 kB)
+Step #0: Collecting google-auth>=2.47.0 (from google-auth[pyopenssl]>=2.47.0->google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading google_auth-2.49.1-py3-none-any.whl.metadata (6.2 kB)
+Step #0: Collecting google-cloud-aiplatform<2.0.0,>=1.132.0 (from google-cloud-aiplatform[agent-engines]<2.0.0,>=1.132.0->google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading google_cloud_aiplatform-1.141.0-py2.py3-none-any.whl.metadata (46 kB)
+Step #0: Collecting google-cloud-bigquery-storage>=2.0.0 (from google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading google_cloud_bigquery_storage-2.36.2-py3-none-any.whl.metadata (10 kB)
+Step #0: Collecting google-cloud-bigquery>=2.2.0 (from google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading google_cloud_bigquery-3.40.1-py3-none-any.whl.metadata (8.2 kB)
+Step #0: Collecting google-cloud-bigtable>=2.32.0 (from google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading google_cloud_bigtable-2.35.0-py3-none-any.whl.metadata (5.8 kB)
+Step #0: Collecting google-cloud-dataplex<3.0.0,>=1.7.0 (from google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading google_cloud_dataplex-2.16.0-py3-none-any.whl.metadata (9.9 kB)
+Step #0: Collecting google-cloud-discoveryengine<0.14.0,>=0.13.12 (from google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading google_cloud_discoveryengine-0.13.12-py3-none-any.whl.metadata (9.6 kB)
+Step #0: Collecting google-cloud-pubsub<3.0.0,>=2.0.0 (from google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading google_cloud_pubsub-2.36.0-py3-none-any.whl.metadata (14 kB)
+Step #0: Collecting google-cloud-secret-manager<3.0.0,>=2.22.0 (from google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading google_cloud_secret_manager-2.26.0-py3-none-any.whl.metadata (9.8 kB)
+Step #0: Collecting google-cloud-spanner<4.0.0,>=3.56.0 (from google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading google_cloud_spanner-3.63.0-py3-none-any.whl.metadata (11 kB)
+Step #0: Collecting google-cloud-speech<3.0.0,>=2.30.0 (from google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading google_cloud_speech-2.37.0-py3-none-any.whl.metadata (9.8 kB)
+Step #0: Collecting google-cloud-storage<4.0.0,>=2.18.0 (from google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading google_cloud_storage-3.9.0-py3-none-any.whl.metadata (15 kB)
+Step #0: Collecting graphviz<1.0.0,>=0.20.2 (from google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading graphviz-0.21-py3-none-any.whl.metadata (12 kB)
+Step #0: Collecting httpx<1.0.0,>=0.27.0 (from google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading httpx-0.28.1-py3-none-any.whl.metadata (7.1 kB)
+Step #0: Collecting jsonschema<5.0.0,>=4.23.0 (from google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading jsonschema-4.26.0-py3-none-any.whl.metadata (7.6 kB)
+Step #0: Collecting mcp<2.0.0,>=1.23.0 (from google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading mcp-1.26.0-py3-none-any.whl.metadata (89 kB)
+Step #0: Collecting opentelemetry-api<1.39.0,>=1.36.0 (from google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading opentelemetry_api-1.38.0-py3-none-any.whl.metadata (1.5 kB)
+Step #0: Collecting opentelemetry-exporter-gcp-logging<2.0.0,>=1.9.0a0 (from google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading opentelemetry_exporter_gcp_logging-1.11.0a0-py3-none-any.whl.metadata (4.8 kB)
+Step #0: Collecting opentelemetry-exporter-gcp-monitoring<2.0.0,>=1.9.0a0 (from google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading opentelemetry_exporter_gcp_monitoring-1.11.0a0-py3-none-any.whl.metadata (4.0 kB)
+Step #0: Collecting opentelemetry-exporter-gcp-trace<2.0.0,>=1.9.0 (from google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading opentelemetry_exporter_gcp_trace-1.11.0-py3-none-any.whl.metadata (3.3 kB)
+Step #0: Collecting opentelemetry-exporter-otlp-proto-http>=1.36.0 (from google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading opentelemetry_exporter_otlp_proto_http-1.40.0-py3-none-any.whl.metadata (2.5 kB)
+Step #0: Collecting opentelemetry-resourcedetector-gcp<2.0.0,>=1.9.0a0 (from google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading opentelemetry_resourcedetector_gcp-1.11.0a0-py3-none-any.whl.metadata (3.2 kB)
+Step #0: Collecting opentelemetry-sdk<1.39.0,>=1.36.0 (from google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading opentelemetry_sdk-1.38.0-py3-none-any.whl.metadata (1.5 kB)
+Step #0: Collecting pyarrow>=14.0.0 (from google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading pyarrow-23.0.1-cp312-cp312-manylinux_2_28_x86_64.whl.metadata (3.1 kB)
+Step #0: Collecting python-dateutil<3.0.0,>=2.9.0.post0 (from google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading python_dateutil-2.9.0.post0-py2.py3-none-any.whl.metadata (8.4 kB)
+Step #0: Collecting requests<3.0.0,>=2.32.4 (from google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading requests-2.32.5-py3-none-any.whl.metadata (4.9 kB)
+Step #0: Collecting sqlalchemy-spanner>=1.14.0 (from google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading sqlalchemy_spanner-1.17.2-py3-none-any.whl.metadata (19 kB)
+Step #0: Collecting sqlalchemy<3.0.0,>=2.0 (from google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading sqlalchemy-2.0.48-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (9.5 kB)
+Step #0: Collecting starlette<1.0.0,>=0.49.1 (from google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading starlette-0.52.1-py3-none-any.whl.metadata (6.3 kB)
+Step #0: Collecting tenacity<10.0.0,>=9.0.0 (from google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading tenacity-9.1.4-py3-none-any.whl.metadata (1.2 kB)
+Step #0: Collecting typing-extensions<5,>=4.5 (from google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading typing_extensions-4.15.0-py3-none-any.whl.metadata (3.3 kB)
+Step #0: Collecting tzlocal<6.0,>=5.3 (from google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading tzlocal-5.3.1-py3-none-any.whl.metadata (7.6 kB)
+Step #0: Collecting watchdog<7.0.0,>=6.0.0 (from google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading watchdog-6.0.0-py3-none-manylinux2014_x86_64.whl.metadata (44 kB)
+Step #0: Collecting websockets>=14.0 (from -r requirements.txt (line 8))
+Step #0:   Downloading websockets-15.0.1-cp312-cp312-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (6.8 kB)
+Step #0: Collecting distro<2,>=1.7.0 (from google-genai>=1.5.0->-r requirements.txt (line 3))
+Step #0:   Downloading distro-1.9.0-py3-none-any.whl.metadata (6.8 kB)
+Step #0: Collecting sniffio (from google-genai>=1.5.0->-r requirements.txt (line 3))
+Step #0:   Downloading sniffio-1.3.1-py3-none-any.whl.metadata (3.9 kB)
+Step #0: Collecting typing-inspection>=0.4.2 (from fastapi>=0.115.0->-r requirements.txt (line 6))
+Step #0:   Downloading typing_inspection-0.4.2-py3-none-any.whl.metadata (2.6 kB)
+Step #0: Collecting annotated-doc>=0.0.2 (from fastapi>=0.115.0->-r requirements.txt (line 6))
+Step #0:   Downloading annotated_doc-0.0.4-py3-none-any.whl.metadata (6.6 kB)
+Step #0: Collecting h11>=0.8 (from uvicorn>=0.34.0->uvicorn[standard]>=0.34.0->-r requirements.txt (line 7))
+Step #0:   Downloading h11-0.16.0-py3-none-any.whl.metadata (8.3 kB)
+Step #0: Collecting cachecontrol>=0.14.3 (from firebase-admin>=6.6.0->-r requirements.txt (line 11))
+Step #0:   Downloading cachecontrol-0.14.4-py3-none-any.whl.metadata (3.1 kB)
+Step #0: Collecting google-api-core<3.0.0dev,>=2.25.1 (from google-api-core[grpc]<3.0.0dev,>=2.25.1; platform_python_implementation != "PyPy"->firebase-admin>=6.6.0->-r requirements.txt (line 11))
+Step #0:   Downloading google_api_core-2.30.0-py3-none-any.whl.metadata (3.1 kB)
+Step #0: Collecting google-cloud-firestore>=2.21.0 (from firebase-admin>=6.6.0->-r requirements.txt (line 11))
+Step #0:   Downloading google_cloud_firestore-2.25.0-py3-none-any.whl.metadata (10 kB)
+Step #0: Collecting pyjwt>=2.10.1 (from pyjwt[crypto]>=2.10.1->firebase-admin>=6.6.0->-r requirements.txt (line 11))
+Step #0:   Downloading pyjwt-2.12.1-py3-none-any.whl.metadata (4.1 kB)
+Step #0: Collecting certifi (from httpx<1.0.0,>=0.27.0->google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading certifi-2026.2.25-py3-none-any.whl.metadata (2.5 kB)
+Step #0: Collecting httpcore==1.* (from httpx<1.0.0,>=0.27.0->google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading httpcore-1.0.9-py3-none-any.whl.metadata (21 kB)
+Step #0: Collecting idna (from httpx<1.0.0,>=0.27.0->google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading idna-3.11-py3-none-any.whl.metadata (8.4 kB)
+Step #0: Collecting h2<5,>=3 (from httpx[http2]==0.28.1->firebase-admin>=6.6.0->-r requirements.txt (line 11))
+Step #0:   Downloading h2-4.3.0-py3-none-any.whl.metadata (5.1 kB)
+Step #0: Collecting annotated-types>=0.6.0 (from pydantic>=2.10.0->-r requirements.txt (line 18))
+Step #0:   Downloading annotated_types-0.7.0-py3-none-any.whl.metadata (15 kB)
+Step #0: Collecting pydantic-core==2.41.5 (from pydantic>=2.10.0->-r requirements.txt (line 18))
+Step #0:   Downloading pydantic_core-2.41.5-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (7.3 kB)
+Step #0: Collecting pyee<14,>=13 (from playwright>=1.49.0->-r requirements.txt (line 21))
+Step #0:   Downloading pyee-13.0.1-py3-none-any.whl.metadata (3.0 kB)
+Step #0: Collecting greenlet<4.0.0,>=3.1.1 (from playwright>=1.49.0->-r requirements.txt (line 21))
+Step #0:   Downloading greenlet-3.3.2-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl.metadata (3.7 kB)
+Step #0: Collecting httptools>=0.6.3 (from uvicorn[standard]>=0.34.0->-r requirements.txt (line 7))
+Step #0:   Downloading httptools-0.7.1-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl.metadata (3.5 kB)
+Step #0: Collecting uvloop>=0.15.1 (from uvicorn[standard]>=0.34.0->-r requirements.txt (line 7))
+Step #0:   Downloading uvloop-0.22.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (4.9 kB)
+Step #0: Collecting watchfiles>=0.20 (from uvicorn[standard]>=0.34.0->-r requirements.txt (line 7))
+Step #0:   Downloading watchfiles-1.1.1-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (4.9 kB)
+Step #0: Collecting cryptography (from authlib<2.0.0,>=1.6.6->google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading cryptography-46.0.5-cp311-abi3-manylinux_2_34_x86_64.whl.metadata (5.7 kB)
+Step #0: Collecting msgpack<2.0.0,>=0.5.2 (from cachecontrol>=0.14.3->firebase-admin>=6.6.0->-r requirements.txt (line 11))
+Step #0:   Downloading msgpack-1.1.2-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (8.1 kB)
+Step #0: Collecting googleapis-common-protos<2.0.0,>=1.56.3 (from google-api-core<3.0.0dev,>=2.25.1->google-api-core[grpc]<3.0.0dev,>=2.25.1; platform_python_implementation != "PyPy"->firebase-admin>=6.6.0->-r requirements.txt (line 11))
+Step #0:   Downloading googleapis_common_protos-1.73.0-py3-none-any.whl.metadata (9.4 kB)
+Step #0: Collecting protobuf<7.0.0,>=4.25.8 (from google-api-core<3.0.0dev,>=2.25.1->google-api-core[grpc]<3.0.0dev,>=2.25.1; platform_python_implementation != "PyPy"->firebase-admin>=6.6.0->-r requirements.txt (line 11))
+Step #0:   Downloading protobuf-6.33.5-cp39-abi3-manylinux2014_x86_64.whl.metadata (593 bytes)
+Step #0: Collecting proto-plus<2.0.0,>=1.22.3 (from google-api-core<3.0.0dev,>=2.25.1->google-api-core[grpc]<3.0.0dev,>=2.25.1; platform_python_implementation != "PyPy"->firebase-admin>=6.6.0->-r requirements.txt (line 11))
+Step #0:   Downloading proto_plus-1.27.1-py3-none-any.whl.metadata (2.2 kB)
+Step #0: Collecting grpcio<2.0.0,>=1.33.2 (from google-api-core[grpc]<3.0.0dev,>=2.25.1; platform_python_implementation != "PyPy"->firebase-admin>=6.6.0->-r requirements.txt (line 11))
+Step #0:   Downloading grpcio-1.78.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (3.8 kB)
+Step #0: Collecting grpcio-status<2.0.0,>=1.33.2 (from google-api-core[grpc]<3.0.0dev,>=2.25.1; platform_python_implementation != "PyPy"->firebase-admin>=6.6.0->-r requirements.txt (line 11))
+Step #0:   Downloading grpcio_status-1.78.0-py3-none-any.whl.metadata (1.3 kB)
+Step #0: Collecting httplib2<1.0.0,>=0.19.0 (from google-api-python-client<3.0.0,>=2.157.0->google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading httplib2-0.31.2-py3-none-any.whl.metadata (2.2 kB)
+Step #0: Collecting google-auth-httplib2<1.0.0,>=0.2.0 (from google-api-python-client<3.0.0,>=2.157.0->google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading google_auth_httplib2-0.3.0-py3-none-any.whl.metadata (3.1 kB)
+Step #0: Collecting uritemplate<5,>=3.0.1 (from google-api-python-client<3.0.0,>=2.157.0->google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading uritemplate-4.2.0-py3-none-any.whl.metadata (2.6 kB)
+Step #0: Collecting pyasn1-modules>=0.2.1 (from google-auth>=2.47.0->google-auth[pyopenssl]>=2.47.0->google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading pyasn1_modules-0.4.2-py3-none-any.whl.metadata (3.5 kB)
+Step #0: Collecting pyopenssl>=20.0.0 (from google-auth[pyopenssl]>=2.47.0->google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading pyopenssl-25.3.0-py3-none-any.whl.metadata (17 kB)
+Step #0: Collecting packaging>=14.3 (from google-cloud-aiplatform<2.0.0,>=1.132.0->google-cloud-aiplatform[agent-engines]<2.0.0,>=1.132.0->google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading packaging-26.0-py3-none-any.whl.metadata (3.3 kB)
+Step #0: Collecting google-cloud-resource-manager<3.0.0,>=1.3.3 (from google-cloud-aiplatform<2.0.0,>=1.132.0->google-cloud-aiplatform[agent-engines]<2.0.0,>=1.132.0->google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading google_cloud_resource_manager-1.16.0-py3-none-any.whl.metadata (9.9 kB)
+Step #0: Collecting docstring_parser<1 (from google-cloud-aiplatform<2.0.0,>=1.132.0->google-cloud-aiplatform[agent-engines]<2.0.0,>=1.132.0->google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading docstring_parser-0.17.0-py3-none-any.whl.metadata (3.5 kB)
+Step #0: Collecting cloudpickle<4.0,>=3.0 (from google-cloud-aiplatform[agent-engines]<2.0.0,>=1.132.0->google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading cloudpickle-3.1.2-py3-none-any.whl.metadata (7.1 kB)
+Step #0: Collecting google-cloud-trace<2 (from google-cloud-aiplatform[agent-engines]<2.0.0,>=1.132.0->google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading google_cloud_trace-1.18.0-py3-none-any.whl.metadata (9.8 kB)
+Step #0: Collecting google-cloud-logging<4 (from google-cloud-aiplatform[agent-engines]<2.0.0,>=1.132.0->google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading google_cloud_logging-3.14.0-py3-none-any.whl.metadata (10 kB)
+Step #0: Collecting google-cloud-iam (from google-cloud-aiplatform[agent-engines]<2.0.0,>=1.132.0->google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading google_cloud_iam-2.21.0-py3-none-any.whl.metadata (10 kB)
+Step #0: Collecting google-cloud-core<3.0.0,>=2.4.1 (from google-cloud-bigquery>=2.2.0->google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading google_cloud_core-2.5.0-py3-none-any.whl.metadata (3.1 kB)
+Step #0: Collecting google-resumable-media<3.0.0,>=2.0.0 (from google-cloud-bigquery>=2.2.0->google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading google_resumable_media-2.8.0-py3-none-any.whl.metadata (2.6 kB)
+Step #0: Collecting grpc-google-iam-v1<1.0.0,>=0.12.4 (from google-cloud-bigtable>=2.32.0->google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading grpc_google_iam_v1-0.14.3-py3-none-any.whl.metadata (9.2 kB)
+Step #0: Collecting google-crc32c<2.0.0dev,>=1.5.0 (from google-cloud-bigtable>=2.32.0->google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading google_crc32c-1.8.0-cp312-cp312-manylinux1_x86_64.manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_5_x86_64.whl.metadata (1.7 kB)
+Step #0: Collecting sqlparse>=0.4.4 (from google-cloud-spanner<4.0.0,>=3.56.0->google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading sqlparse-0.5.5-py3-none-any.whl.metadata (4.7 kB)
+Step #0: Collecting grpc-interceptor>=0.15.4 (from google-cloud-spanner<4.0.0,>=3.56.0->google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading grpc_interceptor-0.15.4-py3-none-any.whl.metadata (8.4 kB)
+Step #0: Collecting opentelemetry-semantic-conventions>=0.43b0 (from google-cloud-spanner<4.0.0,>=3.56.0->google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading opentelemetry_semantic_conventions-0.61b0-py3-none-any.whl.metadata (2.5 kB)
+Step #0: Collecting google-cloud-monitoring>=2.16.0 (from google-cloud-spanner<4.0.0,>=3.56.0->google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading google_cloud_monitoring-2.29.1-py3-none-any.whl.metadata (10 kB)
+Step #0: Collecting mmh3>=4.1.0 (from google-cloud-spanner<4.0.0,>=3.56.0->google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading mmh3-5.2.1-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl.metadata (14 kB)
+Step #0: Collecting attrs>=22.2.0 (from jsonschema<5.0.0,>=4.23.0->google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading attrs-25.4.0-py3-none-any.whl.metadata (10 kB)
+Step #0: Collecting jsonschema-specifications>=2023.03.6 (from jsonschema<5.0.0,>=4.23.0->google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading jsonschema_specifications-2025.9.1-py3-none-any.whl.metadata (2.9 kB)
+Step #0: Collecting referencing>=0.28.4 (from jsonschema<5.0.0,>=4.23.0->google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading referencing-0.37.0-py3-none-any.whl.metadata (2.8 kB)
+Step #0: Collecting rpds-py>=0.25.0 (from jsonschema<5.0.0,>=4.23.0->google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading rpds_py-0.30.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (4.1 kB)
+Step #0: Collecting httpx-sse>=0.4 (from mcp<2.0.0,>=1.23.0->google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading httpx_sse-0.4.3-py3-none-any.whl.metadata (9.7 kB)
+Step #0: Collecting pydantic-settings>=2.5.2 (from mcp<2.0.0,>=1.23.0->google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading pydantic_settings-2.13.1-py3-none-any.whl.metadata (3.4 kB)
+Step #0: Collecting python-multipart>=0.0.9 (from mcp<2.0.0,>=1.23.0->google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading python_multipart-0.0.22-py3-none-any.whl.metadata (1.8 kB)
+Step #0: Collecting sse-starlette>=1.6.1 (from mcp<2.0.0,>=1.23.0->google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading sse_starlette-3.3.2-py3-none-any.whl.metadata (14 kB)
+Step #0: Collecting importlib-metadata<8.8.0,>=6.0 (from opentelemetry-api<1.39.0,>=1.36.0->google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading importlib_metadata-8.7.1-py3-none-any.whl.metadata (4.7 kB)
+Step #0: Collecting opentelemetry-exporter-otlp-proto-common==1.40.0 (from opentelemetry-exporter-otlp-proto-http>=1.36.0->google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading opentelemetry_exporter_otlp_proto_common-1.40.0-py3-none-any.whl.metadata (1.9 kB)
+Step #0: Collecting opentelemetry-proto==1.40.0 (from opentelemetry-exporter-otlp-proto-http>=1.36.0->google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading opentelemetry_proto-1.40.0-py3-none-any.whl.metadata (2.4 kB)
+Step #0: INFO: pip is looking at multiple versions of opentelemetry-exporter-otlp-proto-http to determine which version is compatible with other requirements. This could take a while.
+Step #0: Collecting opentelemetry-exporter-otlp-proto-http>=1.36.0 (from google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading opentelemetry_exporter_otlp_proto_http-1.39.1-py3-none-any.whl.metadata (2.4 kB)
+Step #0: Collecting opentelemetry-exporter-otlp-proto-common==1.39.1 (from opentelemetry-exporter-otlp-proto-http>=1.36.0->google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading opentelemetry_exporter_otlp_proto_common-1.39.1-py3-none-any.whl.metadata (1.8 kB)
+Step #0: Collecting opentelemetry-proto==1.39.1 (from opentelemetry-exporter-otlp-proto-http>=1.36.0->google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading opentelemetry_proto-1.39.1-py3-none-any.whl.metadata (2.3 kB)
+Step #0: Collecting opentelemetry-exporter-otlp-proto-http>=1.36.0 (from google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading opentelemetry_exporter_otlp_proto_http-1.39.0-py3-none-any.whl.metadata (2.4 kB)
+Step #0: Collecting opentelemetry-exporter-otlp-proto-common==1.39.0 (from opentelemetry-exporter-otlp-proto-http>=1.36.0->google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading opentelemetry_exporter_otlp_proto_common-1.39.0-py3-none-any.whl.metadata (1.8 kB)
+Step #0: Collecting opentelemetry-proto==1.39.0 (from opentelemetry-exporter-otlp-proto-http>=1.36.0->google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading opentelemetry_proto-1.39.0-py3-none-any.whl.metadata (2.3 kB)
+Step #0: Collecting opentelemetry-exporter-otlp-proto-http>=1.36.0 (from google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading opentelemetry_exporter_otlp_proto_http-1.38.0-py3-none-any.whl.metadata (2.3 kB)
+Step #0: Collecting opentelemetry-exporter-otlp-proto-common==1.38.0 (from opentelemetry-exporter-otlp-proto-http>=1.36.0->google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading opentelemetry_exporter_otlp_proto_common-1.38.0-py3-none-any.whl.metadata (1.8 kB)
+Step #0: Collecting opentelemetry-proto==1.38.0 (from opentelemetry-exporter-otlp-proto-http>=1.36.0->google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading opentelemetry_proto-1.38.0-py3-none-any.whl.metadata (2.3 kB)
+Step #0: Collecting opentelemetry-semantic-conventions>=0.43b0 (from google-cloud-spanner<4.0.0,>=3.56.0->google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading opentelemetry_semantic_conventions-0.59b0-py3-none-any.whl.metadata (2.4 kB)
+Step #0: Collecting six>=1.5 (from python-dateutil<3.0.0,>=2.9.0.post0->google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading six-1.17.0-py2.py3-none-any.whl.metadata (1.7 kB)
+Step #0: Collecting charset_normalizer<4,>=2 (from requests<3.0.0,>=2.32.4->google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading charset_normalizer-3.4.5-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (39 kB)
+Step #0: Collecting urllib3<3,>=1.21.1 (from requests<3.0.0,>=2.32.4->google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading urllib3-2.6.3-py3-none-any.whl.metadata (6.9 kB)
+Step #0: Collecting alembic (from sqlalchemy-spanner>=1.14.0->google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading alembic-1.18.4-py3-none-any.whl.metadata (7.2 kB)
+Step #0: Collecting cffi>=2.0.0 (from cryptography->authlib<2.0.0,>=1.6.6->google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading cffi-2.0.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (2.6 kB)
+Step #0: Collecting google-cloud-appengine-logging<2.0.0,>=0.1.3 (from google-cloud-logging<4->google-cloud-aiplatform[agent-engines]<2.0.0,>=1.132.0->google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading google_cloud_appengine_logging-1.8.0-py3-none-any.whl.metadata (10 kB)
+Step #0: Collecting google-cloud-audit-log<1.0.0,>=0.3.1 (from google-cloud-logging<4->google-cloud-aiplatform[agent-engines]<2.0.0,>=1.132.0->google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading google_cloud_audit_log-0.4.0-py3-none-any.whl.metadata (9.3 kB)
+Step #0: Collecting hyperframe<7,>=6.1 (from h2<5,>=3->httpx[http2]==0.28.1->firebase-admin>=6.6.0->-r requirements.txt (line 11))
+Step #0:   Downloading hyperframe-6.1.0-py3-none-any.whl.metadata (4.3 kB)
+Step #0: Collecting hpack<5,>=4.1 (from h2<5,>=3->httpx[http2]==0.28.1->firebase-admin>=6.6.0->-r requirements.txt (line 11))
+Step #0:   Downloading hpack-4.1.0-py3-none-any.whl.metadata (4.6 kB)
+Step #0: Collecting pyparsing<4,>=3.1 (from httplib2<1.0.0,>=0.19.0->google-api-python-client<3.0.0,>=2.157.0->google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading pyparsing-3.3.2-py3-none-any.whl.metadata (5.8 kB)
+Step #0: Collecting zipp>=3.20 (from importlib-metadata<8.8.0,>=6.0->opentelemetry-api<1.39.0,>=1.36.0->google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading zipp-3.23.0-py3-none-any.whl.metadata (3.6 kB)
+Step #0: Collecting pyasn1<0.7.0,>=0.6.1 (from pyasn1-modules>=0.2.1->google-auth>=2.47.0->google-auth[pyopenssl]>=2.47.0->google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading pyasn1-0.6.2-py3-none-any.whl.metadata (8.4 kB)
+Step #0: Collecting Mako (from alembic->sqlalchemy-spanner>=1.14.0->google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading mako-1.3.10-py3-none-any.whl.metadata (2.9 kB)
+Step #0: Collecting pycparser (from cffi>=2.0.0->cryptography->authlib<2.0.0,>=1.6.6->google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading pycparser-3.0-py3-none-any.whl.metadata (8.2 kB)
+Step #0: Collecting MarkupSafe>=0.9.2 (from Mako->alembic->sqlalchemy-spanner>=1.14.0->google-adk>=1.2.0->-r requirements.txt (line 2))
+Step #0:   Downloading markupsafe-3.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.7 kB)
+Step #0: Downloading google_adk-1.27.1-py3-none-any.whl (2.7 MB)
+Step #0:    ???????????????????????????????????????? 2.7/2.7 MB 76.6 MB/s eta 0:00:00
+Step #0: Downloading google_genai-1.67.0-py3-none-any.whl (733 kB)
+Step #0:    ??????????????????????????????????????? 733.5/733.5 kB 487.8 MB/s eta 0:00:00
+Step #0: Downloading fastapi-0.135.1-py3-none-any.whl (116 kB)
+Step #0: Downloading uvicorn-0.41.0-py3-none-any.whl (68 kB)
+Step #0: Downloading websockets-15.0.1-cp312-cp312-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl (182 kB)
+Step #0: Downloading firebase_admin-7.2.0-py3-none-any.whl (138 kB)
+Step #0: Downloading httpx-0.28.1-py3-none-any.whl (73 kB)
+Step #0: Downloading httpcore-1.0.9-py3-none-any.whl (78 kB)
+Step #0: Downloading pillow-12.1.1-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (7.0 MB)
+Step #0:    ???????????????????????????????????????? 7.0/7.0 MB 221.0 MB/s eta 0:00:00
+Step #0: Downloading python_dotenv-1.2.2-py3-none-any.whl (22 kB)
+Step #0: Downloading pydantic-2.12.5-py3-none-any.whl (463 kB)
+Step #0: Downloading pydantic_core-2.41.5-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (2.1 MB)
+Step #0:    ???????????????????????????????????????? 2.1/2.1 MB 541.5 MB/s eta 0:00:00
+Step #0: Downloading playwright-1.58.0-py3-none-manylinux1_x86_64.whl (46.2 MB)
+Step #0:    ???????????????????????????????????????? 46.2/46.2 MB 203.9 MB/s eta 0:00:00
+Step #0: Downloading aiosqlite-0.22.1-py3-none-any.whl (17 kB)
+Step #0: Downloading annotated_doc-0.0.4-py3-none-any.whl (5.3 kB)
+Step #0: Downloading annotated_types-0.7.0-py3-none-any.whl (13 kB)
+Step #0: Downloading anyio-4.12.1-py3-none-any.whl (113 kB)
+Step #0: Downloading authlib-1.6.9-py2.py3-none-any.whl (244 kB)
+Step #0: Downloading cachecontrol-0.14.4-py3-none-any.whl (22 kB)
+Step #0: Downloading click-8.3.1-py3-none-any.whl (108 kB)
+Step #0: Downloading distro-1.9.0-py3-none-any.whl (20 kB)
+Step #0: Downloading google_api_core-2.30.0-py3-none-any.whl (173 kB)
+Step #0: Downloading google_api_python_client-2.192.0-py3-none-any.whl (14.8 MB)
+Step #0:    ???????????????????????????????????????? 14.8/14.8 MB 222.4 MB/s eta 0:00:00
+Step #0: Downloading google_auth-2.49.1-py3-none-any.whl (240 kB)
+Step #0: Downloading google_cloud_aiplatform-1.141.0-py2.py3-none-any.whl (8.4 MB)
+Step #0:    ???????????????????????????????????????? 8.4/8.4 MB 232.0 MB/s eta 0:00:00
+Step #0: Downloading google_cloud_bigquery-3.40.1-py3-none-any.whl (262 kB)
+Step #0: Downloading google_cloud_bigquery_storage-2.36.2-py3-none-any.whl (304 kB)
+Step #0: Downloading google_cloud_bigtable-2.35.0-py3-none-any.whl (540 kB)
+Step #0:    ??????????????????????????????????????? 540.3/540.3 kB 453.5 MB/s eta 0:00:00
+Step #0: Downloading google_cloud_dataplex-2.16.0-py3-none-any.whl (584 kB)
+Step #0:    ??????????????????????????????????????? 584.5/584.5 kB 465.7 MB/s eta 0:00:00
+Step #0: Downloading google_cloud_discoveryengine-0.13.12-py3-none-any.whl (3.3 MB)
+Step #0:    ???????????????????????????????????????? 3.3/3.3 MB 233.3 MB/s eta 0:00:00
+Step #0: Downloading google_cloud_firestore-2.25.0-py3-none-any.whl (416 kB)
+Step #0: Downloading google_cloud_pubsub-2.36.0-py3-none-any.whl (323 kB)
+Step #0: Downloading google_cloud_secret_manager-2.26.0-py3-none-any.whl (223 kB)
+Step #0: Downloading google_cloud_spanner-3.63.0-py3-none-any.whl (518 kB)
+Step #0: Downloading google_cloud_speech-2.37.0-py3-none-any.whl (343 kB)
+Step #0: Downloading google_cloud_storage-3.9.0-py3-none-any.whl (321 kB)
+Step #0: Downloading graphviz-0.21-py3-none-any.whl (47 kB)
+Step #0: Downloading greenlet-3.3.2-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl (613 kB)
+Step #0:    ??????????????????????????????????????? 613.9/613.9 kB 488.5 MB/s eta 0:00:00
+Step #0: Downloading h11-0.16.0-py3-none-any.whl (37 kB)
+Step #0: Downloading httptools-0.7.1-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl (517 kB)
+Step #0: Downloading jsonschema-4.26.0-py3-none-any.whl (90 kB)
+Step #0: Downloading mcp-1.26.0-py3-none-any.whl (233 kB)
+Step #0: Downloading opentelemetry_api-1.38.0-py3-none-any.whl (65 kB)
+Step #0: Downloading opentelemetry_exporter_gcp_logging-1.11.0a0-py3-none-any.whl (14 kB)
+Step #0: Downloading opentelemetry_resourcedetector_gcp-1.11.0a0-py3-none-any.whl (18 kB)
+Step #0: Downloading opentelemetry_exporter_gcp_monitoring-1.11.0a0-py3-none-any.whl (13 kB)
+Step #0: Downloading opentelemetry_exporter_gcp_trace-1.11.0-py3-none-any.whl (14 kB)
+Step #0: Downloading opentelemetry_exporter_otlp_proto_http-1.38.0-py3-none-any.whl (19 kB)
+Step #0: Downloading opentelemetry_exporter_otlp_proto_common-1.38.0-py3-none-any.whl (18 kB)
+Step #0: Downloading opentelemetry_proto-1.38.0-py3-none-any.whl (72 kB)
+Step #0: Downloading opentelemetry_sdk-1.38.0-py3-none-any.whl (132 kB)
+Step #0: Downloading opentelemetry_semantic_conventions-0.59b0-py3-none-any.whl (207 kB)
+Step #0: Downloading pyarrow-23.0.1-cp312-cp312-manylinux_2_28_x86_64.whl (47.6 MB)
+Step #0:    ???????????????????????????????????????? 47.6/47.6 MB 240.0 MB/s eta 0:00:00
+Step #0: Downloading pyee-13.0.1-py3-none-any.whl (15 kB)
+Step #0: Downloading pyjwt-2.12.1-py3-none-any.whl (29 kB)
+Step #0: Downloading python_dateutil-2.9.0.post0-py2.py3-none-any.whl (229 kB)
+Step #0: Downloading pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (807 kB)
+Step #0:    ??????????????????????????????????????? 807.9/807.9 kB 519.1 MB/s eta 0:00:00
+Step #0: Downloading requests-2.32.5-py3-none-any.whl (64 kB)
+Step #0: Downloading sqlalchemy-2.0.48-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (3.3 MB)
+Step #0:    ???????????????????????????????????????? 3.3/3.3 MB 248.8 MB/s eta 0:00:00
+Step #0: Downloading sqlalchemy_spanner-1.17.2-py3-none-any.whl (31 kB)
+Step #0: Downloading starlette-0.52.1-py3-none-any.whl (74 kB)
+Step #0: Downloading tenacity-9.1.4-py3-none-any.whl (28 kB)
+Step #0: Downloading typing_extensions-4.15.0-py3-none-any.whl (44 kB)
+Step #0: Downloading typing_inspection-0.4.2-py3-none-any.whl (14 kB)
+Step #0: Downloading tzlocal-5.3.1-py3-none-any.whl (18 kB)
+Step #0: Downloading uvloop-0.22.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (4.4 MB)
+Step #0:    ???????????????????????????????????????? 4.4/4.4 MB 258.1 MB/s eta 0:00:00
+Step #0: Downloading watchdog-6.0.0-py3-none-manylinux2014_x86_64.whl (79 kB)
+Step #0: Downloading watchfiles-1.1.1-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (456 kB)
+Step #0: Downloading sniffio-1.3.1-py3-none-any.whl (10 kB)
+Step #0: Downloading attrs-25.4.0-py3-none-any.whl (67 kB)
+Step #0: Downloading certifi-2026.2.25-py3-none-any.whl (153 kB)
+Step #0: Downloading charset_normalizer-3.4.5-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (196 kB)
+Step #0: Downloading cloudpickle-3.1.2-py3-none-any.whl (22 kB)
+Step #0: Downloading cryptography-46.0.5-cp311-abi3-manylinux_2_34_x86_64.whl (4.5 MB)
+Step #0:    ???????????????????????????????????????? 4.5/4.5 MB 269.1 MB/s eta 0:00:00
+Step #0: Downloading docstring_parser-0.17.0-py3-none-any.whl (36 kB)
+Step #0: Downloading google_auth_httplib2-0.3.0-py3-none-any.whl (9.5 kB)
+Step #0: Downloading google_cloud_core-2.5.0-py3-none-any.whl (29 kB)
+Step #0: Downloading google_cloud_logging-3.14.0-py3-none-any.whl (232 kB)
+Step #0: Downloading google_cloud_monitoring-2.29.1-py3-none-any.whl (387 kB)
+Step #0: Downloading google_cloud_resource_manager-1.16.0-py3-none-any.whl (400 kB)
+Step #0: Downloading google_cloud_trace-1.18.0-py3-none-any.whl (107 kB)
+Step #0: Downloading google_crc32c-1.8.0-cp312-cp312-manylinux1_x86_64.manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_5_x86_64.whl (33 kB)
+Step #0: Downloading google_resumable_media-2.8.0-py3-none-any.whl (81 kB)
+Step #0: Downloading googleapis_common_protos-1.73.0-py3-none-any.whl (297 kB)
+Step #0: Downloading grpc_google_iam_v1-0.14.3-py3-none-any.whl (32 kB)
+Step #0: Downloading grpc_interceptor-0.15.4-py3-none-any.whl (20 kB)
+Step #0: Downloading grpcio-1.78.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (6.7 MB)
+Step #0:    ???????????????????????????????????????? 6.7/6.7 MB 234.7 MB/s eta 0:00:00
+Step #0: Downloading grpcio_status-1.78.0-py3-none-any.whl (14 kB)
+Step #0: Downloading h2-4.3.0-py3-none-any.whl (61 kB)
+Step #0: Downloading httplib2-0.31.2-py3-none-any.whl (91 kB)
+Step #0: Downloading httpx_sse-0.4.3-py3-none-any.whl (9.0 kB)
+Step #0: Downloading idna-3.11-py3-none-any.whl (71 kB)
+Step #0: Downloading importlib_metadata-8.7.1-py3-none-any.whl (27 kB)
+Step #0: Downloading jsonschema_specifications-2025.9.1-py3-none-any.whl (18 kB)
+Step #0: Downloading mmh3-5.2.1-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl (103 kB)
+Step #0: Downloading msgpack-1.1.2-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (427 kB)
+Step #0: Downloading packaging-26.0-py3-none-any.whl (74 kB)
+Step #0: Downloading proto_plus-1.27.1-py3-none-any.whl (50 kB)
+Step #0: Downloading protobuf-6.33.5-cp39-abi3-manylinux2014_x86_64.whl (323 kB)
+Step #0: Downloading pyasn1_modules-0.4.2-py3-none-any.whl (181 kB)
+Step #0: Downloading pydantic_settings-2.13.1-py3-none-any.whl (58 kB)
+Step #0: Downloading pyopenssl-25.3.0-py3-none-any.whl (57 kB)
+Step #0: Downloading python_multipart-0.0.22-py3-none-any.whl (24 kB)
+Step #0: Downloading referencing-0.37.0-py3-none-any.whl (26 kB)
+Step #0: Downloading rpds_py-0.30.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (394 kB)
+Step #0: Downloading six-1.17.0-py2.py3-none-any.whl (11 kB)
+Step #0: Downloading sqlparse-0.5.5-py3-none-any.whl (46 kB)
+Step #0: Downloading sse_starlette-3.3.2-py3-none-any.whl (14 kB)
+Step #0: Downloading uritemplate-4.2.0-py3-none-any.whl (11 kB)
+Step #0: Downloading urllib3-2.6.3-py3-none-any.whl (131 kB)
+Step #0: Downloading alembic-1.18.4-py3-none-any.whl (263 kB)
+Step #0: Downloading google_cloud_iam-2.21.0-py3-none-any.whl (458 kB)
+Step #0: Downloading cffi-2.0.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (219 kB)
+Step #0: Downloading google_cloud_appengine_logging-1.8.0-py3-none-any.whl (18 kB)
+Step #0: Downloading google_cloud_audit_log-0.4.0-py3-none-any.whl (44 kB)
+Step #0: Downloading hpack-4.1.0-py3-none-any.whl (34 kB)
+Step #0: Downloading hyperframe-6.1.0-py3-none-any.whl (13 kB)
+Step #0: Downloading pyasn1-0.6.2-py3-none-any.whl (83 kB)
+Step #0: Downloading pyparsing-3.3.2-py3-none-any.whl (122 kB)
+Step #0: Downloading zipp-3.23.0-py3-none-any.whl (10 kB)
+Step #0: Downloading mako-1.3.10-py3-none-any.whl (78 kB)
+Step #0: Downloading markupsafe-3.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (22 kB)
+Step #0: Downloading pycparser-3.0-py3-none-any.whl (48 kB)
+Step #0: Installing collected packages: zipp, websockets, watchdog, uvloop, urllib3, uritemplate, tzlocal, typing-extensions, tenacity, sqlparse, sniffio, six, rpds-py, PyYAML, python-multipart, python-dotenv, pyparsing, pyjwt, pycparser, pyasn1, pyarrow, protobuf, Pillow, packaging, msgpack, mmh3, MarkupSafe, idna, hyperframe, httpx-sse, httptools, hpack, h11, greenlet, graphviz, google-crc32c, docstring_parser, distro, cloudpickle, click, charset_normalizer, certifi, attrs, annotated-types, annotated-doc, aiosqlite, uvicorn, typing-inspection, sqlalchemy, requests, referencing, python-dateutil, pyee, pydantic-core, pyasn1-modules, proto-plus, opentelemetry-proto, Mako, importlib-metadata, httplib2, httpcore, h2, grpcio, googleapis-common-protos, google-resumable-media, cffi, anyio, watchfiles, starlette, pydantic, playwright, opentelemetry-exporter-otlp-proto-common, opentelemetry-api, jsonschema-specifications, httpx, grpcio-status, grpc-interceptor, google-cloud-audit-log, cryptography, cachecontrol, alembic, sse-starlette, pyopenssl, pydantic-settings, opentelemetry-semantic-conventions, jsonschema, grpc-google-iam-v1, google-auth, fastapi, authlib, opentelemetry-sdk, mcp, google-auth-httplib2, google-api-core, opentelemetry-resourcedetector-gcp, opentelemetry-exporter-otlp-proto-http, google-genai, google-cloud-core, google-api-python-client, google-cloud-trace, google-cloud-storage, google-cloud-speech, google-cloud-secret-manager, google-cloud-resource-manager, google-cloud-pubsub, google-cloud-monitoring, google-cloud-iam, google-cloud-firestore, google-cloud-discoveryengine, google-cloud-dataplex, google-cloud-bigtable, google-cloud-bigquery-storage, google-cloud-bigquery, google-cloud-appengine-logging, opentelemetry-exporter-gcp-trace, opentelemetry-exporter-gcp-monitoring, google-cloud-spanner, google-cloud-logging, google-cloud-aiplatform, firebase-admin, sqlalchemy-spanner, opentelemetry-exporter-gcp-logging, google-adk
+Step #0: Successfully installed Mako-1.3.10 MarkupSafe-3.0.3 Pillow-12.1.1 PyYAML-6.0.3 aiosqlite-0.22.1 alembic-1.18.4 annotated-doc-0.0.4 annotated-types-0.7.0 anyio-4.12.1 attrs-25.4.0 authlib-1.6.9 cachecontrol-0.14.4 certifi-2026.2.25 cffi-2.0.0 charset_normalizer-3.4.5 click-8.3.1 cloudpickle-3.1.2 cryptography-46.0.5 distro-1.9.0 docstring_parser-0.17.0 fastapi-0.135.1 firebase-admin-7.2.0 google-adk-1.27.1 google-api-core-2.30.0 google-api-python-client-2.192.0 google-auth-2.49.1 google-auth-httplib2-0.3.0 google-cloud-aiplatform-1.141.0 google-cloud-appengine-logging-1.8.0 google-cloud-audit-log-0.4.0 google-cloud-bigquery-3.40.1 google-cloud-bigquery-storage-2.36.2 google-cloud-bigtable-2.35.0 google-cloud-core-2.5.0 google-cloud-dataplex-2.16.0 google-cloud-discoveryengine-0.13.12 google-cloud-firestore-2.25.0 google-cloud-iam-2.21.0 google-cloud-logging-3.14.0 google-cloud-monitoring-2.29.1 google-cloud-pubsub-2.36.0 google-cloud-resource-manager-1.16.0 google-cloud-secret-manager-2.26.0 google-cloud-spanner-3.63.0 google-cloud-speech-2.37.0 google-cloud-storage-3.9.0 google-cloud-trace-1.18.0 google-crc32c-1.8.0 google-genai-1.67.0 google-resumable-media-2.8.0 googleapis-common-protos-1.73.0 graphviz-0.21 greenlet-3.3.2 grpc-google-iam-v1-0.14.3 grpc-interceptor-0.15.4 grpcio-1.78.0 grpcio-status-1.78.0 h11-0.16.0 h2-4.3.0 hpack-4.1.0 httpcore-1.0.9 httplib2-0.31.2 httptools-0.7.1 httpx-0.28.1 httpx-sse-0.4.3 hyperframe-6.1.0 idna-3.11 importlib-metadata-8.7.1 jsonschema-4.26.0 jsonschema-specifications-2025.9.1 mcp-1.26.0 mmh3-5.2.1 msgpack-1.1.2 opentelemetry-api-1.38.0 opentelemetry-exporter-gcp-logging-1.11.0a0 opentelemetry-exporter-gcp-monitoring-1.11.0a0 opentelemetry-exporter-gcp-trace-1.11.0 opentelemetry-exporter-otlp-proto-common-1.38.0 opentelemetry-exporter-otlp-proto-http-1.38.0 opentelemetry-proto-1.38.0 opentelemetry-resourcedetector-gcp-1.11.0a0 opentelemetry-sdk-1.38.0 opentelemetry-semantic-conventions-0.59b0 packaging-26.0 playwright-1.58.0 proto-plus-1.27.1 protobuf-6.33.5 pyarrow-23.0.1 pyasn1-0.6.2 pyasn1-modules-0.4.2 pycparser-3.0 pydantic-2.12.5 pydantic-core-2.41.5 pydantic-settings-2.13.1 pyee-13.0.1 pyjwt-2.12.1 pyopenssl-25.3.0 pyparsing-3.3.2 python-dateutil-2.9.0.post0 python-dotenv-1.2.2 python-multipart-0.0.22 referencing-0.37.0 requests-2.32.5 rpds-py-0.30.0 six-1.17.0 sniffio-1.3.1 sqlalchemy-2.0.48 sqlalchemy-spanner-1.17.2 sqlparse-0.5.5 sse-starlette-3.3.2 starlette-0.52.1 tenacity-9.1.4 typing-extensions-4.15.0 typing-inspection-0.4.2 tzlocal-5.3.1 uritemplate-4.2.0 urllib3-2.6.3 uvicorn-0.41.0 uvloop-0.22.1 watchdog-6.0.0 watchfiles-1.1.1 websockets-15.0.1 zipp-3.23.0
+Step #0: [91mWARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+Step #0: [0m[91m
+Step #0: [notice] A new release of pip is available: 25.0.1 -> 26.0.1
+Step #0: [notice] To update, run: pip install --upgrade pip
+Step #0: [0mRemoving intermediate container ead1c4e2e0c4
+Step #0:  ---> 20909d44ad45
+Step #0: Step 14/20 : RUN playwright install chromium
+Step #0:  ---> Running in 7593fde58209
+Step #0: Downloading Chrome for Testing 145.0.7632.6 (playwright chromium v1208) from https://cdn.playwright.dev/chrome-for-testing-public/145.0.7632.6/linux64/chrome-linux64.zip
+Step #0: [91m(node:20) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+Step #0: (Use `node --trace-deprecation ...` to show where the warning was created)
+Step #0: [0m|                                                                                |   0% of 167.3 MiB
+Step #0: |????????                                                                        |  10% of 167.3 MiB
+Step #0: |????????????????                                                                |  20% of 167.3 MiB
+Step #0: |????????????????????????                                                        |  30% of 167.3 MiB
+Step #0: |????????????????????????????????                                                |  40% of 167.3 MiB
+Step #0: |????????????????????????????????????????                                        |  50% of 167.3 MiB
+Step #0: |????????????????????????????????????????????????                                |  60% of 167.3 MiB
+Step #0: |????????????????????????????????????????????????????????                        |  70% of 167.3 MiB
+Step #0: |????????????????????????????????????????????????????????????????                |  80% of 167.3 MiB
+Step #0: |????????????????????????????????????????????????????????????????????????        |  90% of 167.3 MiB
+Step #0: |????????????????????????????????????????????????????????????????????????????????| 100% of 167.3 MiB
+Step #0: Chrome for Testing 145.0.7632.6 (playwright chromium v1208) downloaded to /root/.cache/ms-playwright/chromium-1208
+Step #0: Downloading FFmpeg (playwright ffmpeg v1011) from https://cdn.playwright.dev/dbazure/download/playwright/builds/ffmpeg/1011/ffmpeg-linux.zip
+Step #0: [91m(node:31) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+Step #0: (Use `node --trace-deprecation ...` to show where the warning was created)
+Step #0: [0m|                                                                                |   0% of 2.3 MiB
+Step #0: |????????                                                                        |  10% of 2.3 MiB
+Step #0: |????????????????                                                                |  20% of 2.3 MiB
+Step #0: |????????????????????????                                                        |  30% of 2.3 MiB
+Step #0: |????????????????????????????????                                                |  40% of 2.3 MiB
+Step #0: |????????????????????????????????????????                                        |  50% of 2.3 MiB
+Step #0: |????????????????????????????????????????????????                                |  60% of 2.3 MiB
+Step #0: |????????????????????????????????????????????????????????                        |  70% of 2.3 MiB
+Step #0: |????????????????????????????????????????????????????????????????                |  80% of 2.3 MiB
+Step #0: |????????????????????????????????????????????????????????????????????????        |  90% of 2.3 MiB
+Step #0: |????????????????????????????????????????????????????????????????????????????????| 100% of 2.3 MiB
+Step #0: FFmpeg (playwright ffmpeg v1011) downloaded to /root/.cache/ms-playwright/ffmpeg-1011
+Step #0: Downloading Chrome Headless Shell 145.0.7632.6 (playwright chromium-headless-shell v1208) from https://cdn.playwright.dev/chrome-for-testing-public/145.0.7632.6/linux64/chrome-headless-shell-linux64.zip
+Step #0: [91m(node:42) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+Step #0: (Use `node --trace-deprecation ...` to show where the warning was created)
+Step #0: [0m|                                                                                |   0% of 110.9 MiB
+Step #0: |????????                                                                        |  10% of 110.9 MiB
+Step #0: |????????????????                                                                |  20% of 110.9 MiB
+Step #0: |????????????????????????                                                        |  30% of 110.9 MiB
+Step #0: |????????????????????????????????                                                |  40% of 110.9 MiB
+Step #0: |????????????????????????????????????????                                        |  50% of 110.9 MiB
+Step #0: |????????????????????????????????????????????????                                |  60% of 110.9 MiB
+Step #0: |????????????????????????????????????????????????????????                        |  70% of 110.9 MiB
+Step #0: |????????????????????????????????????????????????????????????????                |  80% of 110.9 MiB
+Step #0: |????????????????????????????????????????????????????????????????????????        |  90% of 110.9 MiB
+Step #0: |????????????????????????????????????????????????????????????????????????????????| 100% of 110.9 MiB
+Step #0: Chrome Headless Shell 145.0.7632.6 (playwright chromium-headless-shell v1208) downloaded to /root/.cache/ms-playwright/chromium_headless_shell-1208
+Step #0: Removing intermediate container 7593fde58209
+Step #0:  ---> 523db994ba33
+Step #0: Step 15/20 : COPY backend/ ./backend/
+Step #0:  ---> 2fb366a944dc
+Step #0: Step 16/20 : COPY --from=frontend-builder /app/frontend/out ./frontend/out
+Step #0:  ---> 1944415cdeb6
+Step #0: Step 17/20 : ENV PORT=8080
+Step #0:  ---> Running in 785f055aa61c
+Step #0: Removing intermediate container 785f055aa61c
+Step #0:  ---> aaa8c5a37bed
+Step #0: Step 18/20 : EXPOSE 8080
+Step #0:  ---> Running in 83da4c8cb3e6
+Step #0: Removing intermediate container 83da4c8cb3e6
+Step #0:  ---> a8b6ec98600a
+Step #0: Step 19/20 : HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3     CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8080/health')" || exit 1
+Step #0:  ---> Running in 3725e05075af
+Step #0: Removing intermediate container 3725e05075af
+Step #0:  ---> c56b7c6698e3
+Step #0: Step 20/20 : CMD ["python", "-m", "uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8080"]
+Step #0:  ---> Running in f26bb29e2ad5
+Step #0: Removing intermediate container f26bb29e2ad5
+Step #0:  ---> c898cdc3afcd
+Step #0: Successfully built c898cdc3afcd
+Step #0: Successfully tagged us-central1-docker.pkg.dev/project-1a707446-a9a9-4354-9f5/nexus-agent/nexus-agent:latest
+Finished Step #0
+Starting Step #1
+Step #1: Already have image (with digest): gcr.io/cloud-builders/docker
+Step #1: Using default tag: latest
+Step #1: The push refers to repository [us-central1-docker.pkg.dev/project-1a707446-a9a9-4354-9f5/nexus-agent/nexus-agent]
+Step #1: 793662dfc771: Preparing
+Step #1: 7c6325290700: Preparing
+Step #1: cf28efa18bfd: Preparing
+Step #1: c671aa130b73: Preparing
+Step #1: b33ebf76097f: Preparing
+Step #1: 9abfe5a1458d: Preparing
+Step #1: 7a5fdbe2905d: Preparing
+Step #1: 789d614e27ab: Preparing
+Step #1: c2cad67c34c6: Preparing
+Step #1: 7a589dab7d18: Preparing
+Step #1: a257f20c716c: Preparing
+Step #1: a257f20c716c: Waiting
+Step #1: b33ebf76097f: Pushed
+Step #1: 7a5fdbe2905d: Pushed
+Step #1: 7c6325290700: Pushed
+Step #1: 793662dfc771: Pushed
+Step #1: 789d614e27ab: Pushed
+Step #1: 7a589dab7d18: Pushed
+Step #1: c2cad67c34c6: Pushed
+Step #1: a257f20c716c: Pushed
+Step #1: 9abfe5a1458d: Pushed
+Step #1: cf28efa18bfd: Pushed
+Step #1: c671aa130b73: Pushed
+Step #1: latest: digest: sha256:9b471833f51e841c3a61c1cbe3fa46b27906a615fdf1d95fd1145847f856104b size: 2632
+Finished Step #1
+Starting Step #2
+Step #2: Pulling image: gcr.io/google.com/cloudsdktool/cloud-sdk
+Step #2: Using default tag: latest
+Step #2: latest: Pulling from google.com/cloudsdktool/cloud-sdk
+Step #2: a3a456f21b59: Already exists
+Step #2: 3cfa4cf06121: Pulling fs layer
+Step #2: 1c67dc801270: Pulling fs layer
+Step #2: 199b5d7e6ce2: Pulling fs layer
+Step #2: 36db9b1fb857: Pulling fs layer
+Step #2: 721c5b5a6818: Pulling fs layer
+Step #2: 3cfa4cf06121: Verifying Checksum
+Step #2: 3cfa4cf06121: Download complete
+Step #2: 721c5b5a6818: Verifying Checksum
+Step #2: 721c5b5a6818: Download complete
+Step #2: 36db9b1fb857: Verifying Checksum
+Step #2: 36db9b1fb857: Download complete
+Step #2: 3cfa4cf06121: Pull complete
+Step #2: 199b5d7e6ce2: Verifying Checksum
+Step #2: 199b5d7e6ce2: Download complete
+Step #2: 1c67dc801270: Verifying Checksum
+Step #2: 1c67dc801270: Download complete
+Step #2: 1c67dc801270: Pull complete
+Step #2: 199b5d7e6ce2: Pull complete
+Step #2: 36db9b1fb857: Pull complete
+Step #2: 721c5b5a6818: Pull complete
+Step #2: Digest: sha256:d547ef6adea5a37050e9b893ad6f2670bbc1fd9eb023622b92559fd1902df702
+Step #2: Status: Downloaded newer image for gcr.io/google.com/cloudsdktool/cloud-sdk:latest
+Step #2: gcr.io/google.com/cloudsdktool/cloud-sdk:latest
+Step #2: Deploying container to Cloud Run service [nexus-agent] in project [project-1a707446-a9a9-4354-9f5] region [us-central1]
+Step #2: Deploying...
+Step #2: Setting IAM Policy..........done
+Step #2: Creating Revision.............................................................................................................................................................................................................................................................................failed
+Step #2: Deployment failed
+Step #2: ERROR: (gcloud.run.deploy) spec.template.spec.containers[0].env[1].value_from.secret_key_ref.name: Permission denied on secret: projects/1073100158598/secrets/nexus-gemini-api-key/versions/latest for Revision service account 1073100158598-compute@developer.gserviceaccount.com. The service account used must be granted the 'Secret Manager Secret Accessor' role (roles/secretmanager.secretAccessor) at the secret, project or higher level.
+Finished Step #2
+ERROR
+ERROR: build step 2 "gcr.io/google.com/cloudsdktool/cloud-sdk" failed: step exited with non-zero status: 1
+---------------------------------------------

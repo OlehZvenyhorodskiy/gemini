@@ -14,6 +14,7 @@ the user starts talking over the model.
 import asyncio
 import base64
 import logging
+import uuid
 from typing import Any, Callable, Awaitable, Optional
 
 from google import genai
@@ -25,7 +26,7 @@ logger = logging.getLogger("nexus.live")
 LIVE_MODEL = "gemini-2.5-flash-native-audio-latest"
 
 # Fallback if native audio model isn't available on the account
-LIVE_MODEL_FALLBACK = "gemini-2.5-flash-native-audio-latest"
+LIVE_MODEL_FALLBACK = "gemini-2.5-flash-native-audio-preview-12-2025"
 
 
 class LiveConnection:
@@ -50,15 +51,17 @@ class LiveConnection:
         tools: list[dict[str, Any]] | None = None,
         response_modalities: list[str] | None = None,
         tool_executor: Optional[Callable[[str, dict], Awaitable[dict]]] = None,
+        voice_name: str = "Aoede",
     ) -> None:
         self._api_key = api_key
         self._system_instruction = system_instruction
         self._tools = tools
         self._response_modalities = response_modalities or ["AUDIO"]
         self._tool_executor = tool_executor
+        self._voice_name = voice_name
 
         # GenAI client — one per connection is fine, they're lightweight
-        self._client = genai.Client(api_key=api_key)
+        self._client = genai.Client(api_key=api_key, http_options={"api_version": "v1alpha"})
 
         # The live session handle from the SDK
         self._session: Any = None
@@ -74,7 +77,7 @@ class LiveConnection:
         self._connected = False
         self._interrupted = False
 
-        logger.info("LiveConnection created (not yet connected)")
+        logger.info(f"LiveConnection created with voice '{voice_name}' (not yet connected)")
 
     async def connect(self) -> None:
         """
@@ -158,6 +161,15 @@ class LiveConnection:
                 "message": f"Text send error: {str(e)}",
             })
 
+    async def interrupt(self) -> None:
+        """
+        Flag the current turn as interrupted.
+        The receive loop checks this flag and stops relaying audio/text
+        from the current turn once it is set.
+        """
+        self._interrupted = True
+        logger.info("LiveConnection turn interrupted by user")
+
     async def _run_connection_loop(self) -> None:
         """
         Main loop that maintains the Gemini Live session.
@@ -173,13 +185,14 @@ class LiveConnection:
                 model_id = LIVE_MODEL
 
                 # Build config for native audio model compatibility
-                # We must properly format the system instructions as a Content part payload
                 config = {
-                    "response_modalities": self._response_modalities,
-                    "speech_config": {
-                        "voice_config": {
-                            "prebuilt_voice_config": {
-                                "voice_name": "Aoede"
+                    "generation_config": {
+                        "response_modalities": self._response_modalities,
+                        "speech_config": {
+                            "voice_config": {
+                                "prebuilt_voice_config": {
+                                    "voice_name": self._voice_name
+                                }
                             }
                         }
                     },
@@ -268,6 +281,7 @@ class LiveConnection:
         """
         while True:
             turn = session.receive()
+            turn_id = str(uuid.uuid4())[:8]
             is_speaking_this_turn = False
 
             async for response in turn:
@@ -299,9 +313,14 @@ class LiveConnection:
                                     "state": "speaking",
                                 })
                         elif part.text:
+                            # Skip internal thinking/thought parts from being sent to UI
+                            if getattr(part, "thought", False):
+                                continue
+                            
                             await self.output_queue.put({
                                 "type": "text",
                                 "content": part.text,
+                                "turn_id": turn_id
                             })
                         elif part.function_call:
                             await self._handle_tool_call(session, part.function_call)

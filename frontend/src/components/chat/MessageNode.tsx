@@ -1,15 +1,14 @@
 "use client";
 
 import type { ChatMessage, AgentMode } from "@/hooks";
+import { SimpleMarkdown } from "@/components/ui/SimpleMarkdown";
 
 /**
- * MessageNode — renders a single chat message in the spatial canvas layout.
+ * MessageNode — renders a single chat message in a normal flow layout.
  *
- * Handles all message types: text, image, tool (with generative UI widgets
- * like timer, weather, story choice buttons), and error messages.
- *
- * Each node is absolutely positioned in the spatial canvas based on its
- * index and role (user messages sit on the right, agent on the left).
+ * v2: Removed all spatial canvas / absolute positioning logic.
+ * Messages now use standard flexbox — user messages right-aligned,
+ * agent messages left-aligned, with proper spacing and no overlaps.
  */
 interface MessageNodeProps {
     msg: ChatMessage;
@@ -35,53 +34,19 @@ export function MessageNode({
     wsRef,
     addMessage,
 }: MessageNodeProps) {
-    const row = index;
     const isUser = msg.role === "user";
-    const xBase = 250;
-    const spacingY = 180;
-    const posX = isUser ? xBase : -xBase;
-    const posY = row * spacingY;
-
-    // Connection line to previous node
-    let prevPosX = 0;
-    let prevPosY = 0;
-    if (index > 0) {
-        const prevIsUser = messages[index - 1].role === "user";
-        prevPosX = prevIsUser ? xBase : -xBase;
-        prevPosY = (index - 1) * spacingY;
-    }
 
     return (
-        <div key={msg.id}>
-            {index > 0 && (
-                <svg className="spatial-connection pointer-events-none" style={{ position: "absolute", left: 0, top: 0, overflow: "visible", zIndex: -1 }}>
-                    <path
-                        d={`M ${prevPosX} ${prevPosY + 40} C ${prevPosX} ${posY - 40}, ${posX} ${prevPosY + 80}, ${posX} ${posY - 20}`}
-                        fill="none"
-                        stroke="var(--glass-border)"
-                        strokeWidth="2"
-                        strokeDasharray="5,5"
-                    />
-                </svg>
-            )}
+        <div
+            className={`message-wrapper ${isUser ? 'justify-end' : 'justify-start'}`}
+        >
             <div
-                className={`message-row ${msg.role} spatial-node`}
-                style={{
-                    position: "absolute",
-                    transform: `translate(calc(-50% + ${posX}px), ${posY}px)`,
-                    width: "400px",
-                    boxShadow: "0 8px 32px rgba(0,0,0,0.2)",
-                    borderRadius: "16px",
-                    padding: "16px",
-                    background: isUser ? "var(--bg-card)" : "var(--glass-bg)",
-                    backdropFilter: isUser ? "none" : "blur(12px)",
-                    border: "1px solid var(--border-primary)"
-                }}
+                className={`message-row ${msg.role}`}
             >
-                <div className={`avatar ${msg.role === "user" ? "user-avatar" : "agent-avatar"}`}>
-                    {msg.role === "user" ? "U" : "✦"}
+                <div className={`avatar ${isUser ? "user-avatar" : "agent-avatar"}`}>
+                    {isUser ? "U" : "✦"}
                 </div>
-                <div>
+                <div className="message-content-area">
                     {msg.type === "tool" ? (
                         <div className="tool-card">
                             <div className="tool-name">🔧 {msg.toolName}</div>
@@ -115,7 +80,6 @@ export function MessageNode({
                                                 </div>
                                             );
                                         } else if (msg.toolArgs.widget_type === "poll") {
-                                            /* Interactive poll widget — renders voting buttons with animated progress bars */
                                             const question = (wData.question as string) || "What do you think?";
                                             const options = (wData.options as string[]) || ["Option A", "Option B"];
                                             const pollColors = ["var(--google-blue)", "var(--google-red)", "var(--google-green)", "var(--google-yellow)"];
@@ -151,7 +115,6 @@ export function MessageNode({
                                                 </div>
                                             );
                                         } else if (msg.toolArgs.widget_type === "chart") {
-                                            /* Bar chart widget — renders inline SVG bars with labels */
                                             const labels = (wData.labels as string[]) || ["A", "B", "C"];
                                             const values = (wData.values as number[]) || [30, 70, 50];
                                             const maxVal = Math.max(...values, 1);
@@ -166,7 +129,6 @@ export function MessageNode({
                                                         <span className="text-sm font-bold text-[var(--text-primary)]">{(wData.title as string) || "Chart"}</span>
                                                     </div>
                                                     <svg width={chartWidth} height={chartHeight + 32} viewBox={`0 0 ${chartWidth} ${chartHeight + 32}`}>
-                                                        {/* Baseline */}
                                                         <line x1="0" y1={chartHeight} x2={chartWidth} y2={chartHeight} stroke="var(--border-primary)" strokeWidth="1" />
                                                         {labels.map((label: string, idx: number) => {
                                                             const barH = (values[idx] / maxVal) * (chartHeight - 8);
@@ -185,6 +147,59 @@ export function MessageNode({
                                                             );
                                                         })}
                                                     </svg>
+                                                </div>
+                                            );
+                                        } else if (msg.toolArgs.widget_type === "knowledge_graph") {
+                                            const nodes = (wData.nodes as string[]) || ["Concept A", "Concept B", "Concept C"];
+                                            return (
+                                                <div className="p-4 rounded-2xl border border-[var(--border-primary)] bg-[var(--glass-bg)] backdrop-blur-md shadow-lg w-full max-w-sm">
+                                                    <div className="flex items-center gap-2 mb-3">
+                                                        <span className="text-xl">🕸️</span>
+                                                        <div className="text-sm font-bold text-[var(--text-primary)] leading-tight">Knowledge Graph</div>
+                                                    </div>
+                                                    <div className="relative flex items-center justify-center p-6 border-dashed border-2 rounded-xl border-gray-400/30">
+                                                        <div className="flex flex-wrap gap-4 justify-center">
+                                                            {nodes.map((node, i) => (
+                                                                <span key={i} className="px-3 py-1 bg-[--google-blue] bg-opacity-20 text-[--google-blue] rounded-full border border-[--google-blue] text-xs font-semibold shadow-sm cursor-pointer hover:scale-105 transition-transform" onClick={() => {
+                                                                    addMessage("user", "text", `Tell me more about ${node}`);
+                                                                    if (wsRef.current?.readyState === WebSocket.OPEN) {
+                                                                        wsRef.current.send(JSON.stringify({ type: "text", content: `Tell me more about ${node}` }));
+                                                                    }
+                                                                }}>
+                                                                    {node}
+                                                                </span>
+                                                            ))}
+                                                        </div>
+                                                        <div className="absolute inset-0 pointer-events-none opacity-20">
+                                                            <svg width="100%" height="100%">
+                                                                <line x1="20%" y1="50%" x2="50%" y2="20%" stroke="var(--google-blue)" strokeWidth="2" strokeDasharray="4"/>
+                                                                <line x1="50%" y1="20%" x2="80%" y2="50%" stroke="var(--google-blue)" strokeWidth="2" strokeDasharray="4"/>
+                                                                <line x1="20%" y1="50%" x2="80%" y2="50%" stroke="var(--google-blue)" strokeWidth="2" strokeDasharray="4"/>
+                                                            </svg>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            );
+                                        } else if (msg.toolArgs.widget_type === "mood_board") {
+                                            const colors = (wData.colors as string[]) || ["#E8EAED", "#FCE8E6", "#E6F4EA", "#E8F0FE"];
+                                            const title = (wData.title as string) || "Visual Mood Board";
+                                            return (
+                                                <div className="p-4 rounded-2xl border border-[var(--border-primary)] bg-[var(--glass-bg)] backdrop-blur-md shadow-lg w-full max-w-sm">
+                                                    <div className="flex items-center gap-2 mb-3">
+                                                        <span className="text-xl">🎨</span>
+                                                        <div className="text-sm font-bold text-[var(--text-primary)] leading-tight">{title}</div>
+                                                    </div>
+                                                    <div className="flex w-full h-16 rounded-xl overflow-hidden shadow-sm">
+                                                        {colors.map((c, i) => (
+                                                            <div key={i} className="flex-1 cursor-pointer hover:scale-[1.1] transition-transform origin-center" style={{ backgroundColor: c }} onClick={() => {
+                                                                addMessage("user", "text", `Apply color theme: ${c}`);
+                                                                if (wsRef.current?.readyState === WebSocket.OPEN) {
+                                                                    wsRef.current.send(JSON.stringify({ type: "text", content: `Apply color theme: ${c}` }));
+                                                                }
+                                                            }}></div>
+                                                        ))}
+                                                    </div>
+                                                    <div className="mt-2 text-xs text-center font-medium text-[var(--text-tertiary)]">Click a color to apply it to the UI</div>
                                                 </div>
                                             );
                                         }
@@ -267,7 +282,16 @@ export function MessageNode({
                             {msg.type === "error" ? (
                                 <div className="message-bubble error">{msg.content}</div>
                             ) : (
-                                msg.content
+                                <>
+                                    {msg.role === "agent" ? (
+                                        <SimpleMarkdown content={msg.content} />
+                                    ) : (
+                                        <span>{msg.content}</span>
+                                    )}
+                                    {index === messages.length - 1 && msg.role === "agent" && mode === "creative" && (
+                                        <span className="animate-pulse ml-1 inline-block w-2 h-4 bg-[var(--google-blue)] align-middle"></span>
+                                    )}
+                                </>
                             )}
                             <div className="message-time">
                                 {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}

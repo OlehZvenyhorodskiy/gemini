@@ -30,6 +30,7 @@ from backend.agents.system_prompts import (
     LIVE_SYSTEM_INSTRUCTION,
 )
 from backend.agents.tool_router import ToolRouter
+from backend.agents.adk_agent import ResearchADKAgent
 
 logger = logging.getLogger("nexus.agent")
 
@@ -45,11 +46,12 @@ class NexusAgent:
     """
 
     def __init__(self) -> None:
-        self._client = genai.Client(api_key=GOOGLE_API_KEY)
+        self._client = genai.Client(api_key=GOOGLE_API_KEY, http_options={"api_version": "v1alpha"})
         self._sessions: dict[str, AgentSession] = {}
         self._tool_router = ToolRouter(client=self._client)
+        self._adk_research_agent = ResearchADKAgent()
 
-        logger.info("NexusAgent initialized with Gemini client + modular tool engines")
+        logger.info("NexusAgent initialized with Gemini client + modular tool engines + ADK")
 
     # ── System Instruction Assembly ───────────────────────────────────
 
@@ -92,21 +94,43 @@ class NexusAgent:
         "game": 0.9,        # Dramatic storytelling
     }
 
+    # Per-mode voice — each persona family gets a distinct Gemini TTS voice
+    # so switching modes genuinely sounds like talking to a different person.
+    # Available voices: Aoede, Charon, Fenrir, Kore, Puck
+    MODE_VOICE: dict[str, str] = {
+        "live": "Aoede",       # warm, conversational companion
+        "creative": "Kore",    # expressive, dramatic storyteller
+        "navigator": "Charon", # precise, calm tactical copilot
+        "code": "Puck",        # clear, technical engineer
+        "research": "Aoede",   # neutral, professional analyst
+        "language": "Kore",    # clear articulation for language teaching
+        "data": "Puck",        # analytical, data-driven
+        "music": "Kore",       # musical, expressive producer
+        "game": "Charon",      # dramatic, deep dungeon master
+        "meeting": "Aoede",    # neutral, professional note-taker
+        "security": "Charon",  # authoritative, commanding
+        "fitness": "Puck",     # energetic, motivating coach
+        "travel": "Kore",      # warm, adventurous explorer
+        "debate": "Charon",    # commanding, intellectual
+    }
+
     # ── Live API Configuration ────────────────────────────────────────
 
     def get_live_config(self, session_id: str, mode: str) -> dict:
         """
         Build the config dict for a Gemini Live API session.
         This goes straight into client.aio.live.connect(config=...).
+        Includes per-mode voice selection so each persona sounds distinct.
         """
         config: dict = {
             "response_modalities": ["AUDIO"],
             "system_instruction": self._get_system_instruction(session_id, mode),
             "temperature": self.MODE_TEMPERATURE.get(mode, 0.6),
+            "voice_name": self.MODE_VOICE.get(mode, "Aoede"),
         }
 
-        # Creative mode also generates text alongside audio
-        if mode == "creative":
+        # Analytical modes also generate text alongside audio for better UI feedback
+        if mode in ["creative", "code", "navigator", "research", "data", "security"]:
             config["response_modalities"] = ["AUDIO", "TEXT"]
 
         # Build tool declarations for the live session
@@ -178,6 +202,11 @@ class NexusAgent:
         if not session:
             return [{"type": "error", "message": "Session not found"}]
 
+        # ADK Fallback for Research mode
+        if mode == "research":
+            adk_response = await self._adk_research_agent.execute_research(session_id, text)
+            return [adk_response]
+
         model = get_model_for_mode(mode)
         system_instruction = self._get_system_instruction(session_id, mode)
         tools = get_tools_for_mode(mode)
@@ -211,6 +240,8 @@ class NexusAgent:
                 session.history.append(content)
 
                 for part in content.parts:
+                    if getattr(part, "thought", False):
+                        continue
                     if part.text:
                         responses.append({
                             "type": "text",

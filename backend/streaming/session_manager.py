@@ -52,6 +52,18 @@ class ClientSession:
     live_connection: Optional[LiveConnection] = field(default=None)
     video_processor: Optional[VideoProcessor] = field(default=None)
     relay_task: Optional[asyncio.Task] = field(default=None)
+    ws_lock: asyncio.Lock = field(default_factory=asyncio.Lock)
+
+    async def send_message(self, message: dict) -> None:
+        async with self.ws_lock:
+            await self.websocket.send_json(message)
+
+    ws_lock: asyncio.Lock = field(default_factory=asyncio.Lock)
+
+    async def send_json(self, message: dict) -> None:
+        async with self.ws_lock:
+            await self.websocket.send_json(message)
+
 
 
 # How long to keep a disconnected session alive before destroying it.
@@ -130,7 +142,7 @@ class SessionManager:
         """
         if not GOOGLE_API_KEY:
             logger.warning("No GOOGLE_API_KEY set — live connection disabled")
-            await session.websocket.send_json({
+            await session.send_json({
                 "type": "error",
                 "message": "API key not configured. Live streaming disabled.",
             })
@@ -165,6 +177,7 @@ class SessionManager:
                 tools=live_config.get("tools"),
                 response_modalities=live_config.get("response_modalities", ["AUDIO"]),
                 tool_executor=_tool_executor,
+                voice_name=live_config.get("voice_name", "Aoede"),
             )
 
             await live_conn.connect()
@@ -184,7 +197,7 @@ class SessionManager:
                 f"Failed to setup live connection for {session.session_id}: {e}",
                 exc_info=True,
             )
-            await session.websocket.send_json({
+            await session.send_json({
                 "type": "error",
                 "message": f"Live connection setup failed: {str(e)}. Text mode still works.",
             })
@@ -209,7 +222,7 @@ class SessionManager:
                 message = await live_conn.output_queue.get()
 
                 try:
-                    await session.websocket.send_json(message)
+                    await session.send_json(message)
 
                     # Persist to Firestore (skip audio chunks — too much data)
                     if message.get("type") != "audio":
@@ -379,7 +392,7 @@ class SessionManager:
                 mode=session.mode,
             )
             for response in responses:
-                await session.websocket.send_json(response)
+                await session.send_json(response)
 
     async def handle_video(self, session_id: str, message: ClientVideoMessage) -> None:
         """
@@ -439,7 +452,7 @@ class SessionManager:
                 mode=session.mode,
             )
             for response in responses:
-                await session.websocket.send_json(response)
+                await session.send_json(response)
 
     async def handle_text(self, session_id: str, message: ClientTextMessage) -> None:
         """
@@ -455,7 +468,7 @@ class SessionManager:
             return
 
         # Signal "thinking" to the UI
-        await session.websocket.send_json({
+        await session.send_json({
             "type": "status",
             "state": "thinking",
         })
@@ -474,10 +487,10 @@ class SessionManager:
             )
 
             for response in responses:
-                await session.websocket.send_json(response)
+                await session.send_json(response)
 
             # Back to listening after we're done
-            await session.websocket.send_json({
+            await session.send_json({
                 "type": "status",
                 "state": "listening",
             })
@@ -496,7 +509,7 @@ class SessionManager:
         }
         if new_mode not in valid_modes:
             session = self._get_session(session_id)
-            await session.websocket.send_json({
+            await session.send_json({
                 "type": "error",
                 "message": f"Invalid mode: {new_mode}. Use one of: {valid_modes}",
             })
@@ -506,35 +519,51 @@ class SessionManager:
         old_mode = session.mode
         session.mode = new_mode
 
-        await self._agent.switch_mode(session_id, new_mode)
+        try:
+            await self._agent.switch_mode(session_id, new_mode)
 
-        # Update the video processor for the new mode's FPS config
-        if session.video_processor:
-            session.video_processor.set_mode(new_mode)
+            # Update the video processor for the new mode's FPS config
+            if session.video_processor:
+                session.video_processor.set_mode(new_mode)
 
-        # Reconnect live session with new mode's config
-        # (different system instruction, tools, modalities)
-        if session.live_connection:
-            # Cancel relay first
-            if session.relay_task and not session.relay_task.done():
-                session.relay_task.cancel()
-                try:
-                    await session.relay_task
-                except asyncio.CancelledError:
-                    pass
+            # Reconnect live session with new mode's config
+            # (different system instruction, tools, modalities)
+            if session.live_connection:
+                # Cancel relay first
+                if session.relay_task and not session.relay_task.done():
+                    session.relay_task.cancel()
+                    try:
+                        await session.relay_task
+                    except asyncio.CancelledError:
+                        pass
+                    except Exception as relay_err:
+                        logger.debug(f"Relay task cleanup error: {relay_err}")
 
-            await session.live_connection.disconnect()
-            session.live_connection = None
+                await session.live_connection.disconnect()
+                session.live_connection = None
 
-        # Set up fresh live connection with new mode's config
-        await self._setup_live_connection(session)
+            # Set up fresh live connection with new mode's config
+            await self._setup_live_connection(session)
 
-        await session.websocket.send_json({
-            "type": "status",
-            "state": "listening",
-            "mode": new_mode,
-            "message": f"Switched from {old_mode} to {new_mode}",
-        })
+            await session.send_json({
+                "type": "status",
+                "state": "listening",
+                "mode": new_mode,
+                "message": f"Switched from {old_mode} to {new_mode}",
+            })
+        except Exception as e:
+            logger.error(f"Error switching mode for session {session_id}: {e}", exc_info=True)
+            # Revert mode in session state if it failed
+            session.mode = old_mode
+            await session.send_json({
+                "type": "error",
+                "message": f"Failed to switch to {new_mode}. Staying in {old_mode}. Error: {str(e)}",
+            })
+            await session.send_json({
+                "type": "status",
+                "state": "listening",
+                "mode": old_mode,
+            })
 
     async def handle_interrupt(self, session_id: str) -> None:
         """
@@ -551,7 +580,7 @@ class SessionManager:
 
         await self._agent.interrupt(session_id)
 
-        await session.websocket.send_json({
+        await session.send_json({
             "type": "status",
             "state": "interrupted",
             "message": "User interruption detected."
@@ -566,7 +595,7 @@ class SessionManager:
 
         await self._agent.update_config(session_id, settings)
 
-        await session.websocket.send_json({
+        await session.send_json({
             "type": "status",
             "state": "listening",
             "message": "Configuration updated",
