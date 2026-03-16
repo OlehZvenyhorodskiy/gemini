@@ -4,8 +4,8 @@
 >
 > *14 Specialized Personas. One Voice. Infinite Possibilities.*
 
-[![Demo Video](https://img.shields.io/badge/▶-Watch%20Demo-red?style=for-the-badge&logo=youtube)](YOUR_DEMO_VIDEO_LINK)
-[![Live Demo](https://img.shields.io/badge/🚀-Try%20Live%20Demo-4285F4?style=for-the-badge)](YOUR_CLOUD_RUN_URL)
+[![Demo Video](https://img.shields.io/badge/▶-Watch%20Demo-red?style=for-the-badge&logo=youtube)]([https://youtu.be/Mqp9Kphd_jk])
+[![Live Demo](https://img.shields.io/badge/🚀-Try%20Live%20Demo-4285F4?style=for-the-badge)]([https://nexus-agent-olpaxgmyzq-ew.a.run.app/])
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 ![Python](https://img.shields.io/badge/python-3.12%2B-blue)
 ![Next.js](https://img.shields.io/badge/next.js-15.1-black)
