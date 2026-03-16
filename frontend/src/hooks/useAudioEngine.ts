@@ -188,21 +188,22 @@ export function useAudioEngine(): UseAudioEngineReturn {
      *   4. Reset the play-head, crossfade state, and analyser
      */
     const flushAudio = useCallback(() => {
+        // 1. Очищаємо чергу — нові чанки не грають
         audioQueueRef.current = [];
         isPlayingRef.current = false;
+        nextPlayTimeRef.current = 0;
 
-        if (playbackCtxRef.current && playbackCtxRef.current.state === 'running') {
+        // 2. ЗАКРИВАЄМО контекст повністю — це знищує всі заплановані вузли
+        if (playbackCtxRef.current) {
             try {
-                // Мгновенно останавливаем текущее воспроизведение
-                playbackCtxRef.current.suspend().then(() => {
-                    // Сбрасываем время для следующих чанков
-                    nextPlayTimeRef.current = 0;
-                    // Возобновляем контекст, чтобы он был готов к новому аудио
-                    playbackCtxRef.current?.resume();
-                });
+                playbackCtxRef.current.close(); // <- close() а не suspend/resume!
             } catch (e) {
-                console.error("Failed to suspend AudioContext on barge-in", e);
+                console.error("Failed to close AudioContext on barge-in", e);
             }
+            // 3. Обнуляємо всі refs — ensureContext створить нові при наступному аудіо
+            playbackCtxRef.current = null;
+            gainNodeRef.current = null;
+            outputAnalyserRef.current = null;
         }
     }, []);
 
