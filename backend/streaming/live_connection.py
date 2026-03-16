@@ -406,30 +406,25 @@ class LiveConnection:
 
     async def _drain_audio_queue(self) -> None:
         """
-        Remove pending audio messages from the output queue on barge-in.
-
-        We pop everything, check if it's audio, and put back non-audio
-        messages so text/status/tool_call responses aren't lost.
+        Atomically drain all audio chunks by creating a new queue.
+        This is the only truly race-safe method.
         """
+        old_queue = self.output_queue
+        self.output_queue = asyncio.Queue()
+        
         drained = 0
-        kept: list[dict[str, Any]] = []
-
-        while not self.output_queue.empty():
+        while not old_queue.empty():
             try:
-                msg = self.output_queue.get_nowait()
-                if msg.get("type") == "audio":
-                    drained += 1
+                msg = old_queue.get_nowait()
+                if msg.get("type") != "audio":
+                    await self.output_queue.put(msg)
                 else:
-                    kept.append(msg)
+                    drained += 1
             except asyncio.QueueEmpty:
                 break
-
-        # Put back non-audio messages
-        for msg in kept:
-            await self.output_queue.put(msg)
-
+        
         if drained > 0:
-            logger.info(f"Drained {drained} audio chunks from output queue on barge-in")
+            logger.info(f"Drained {drained} audio chunks on barge-in")
 
     @property
     def is_connected(self) -> bool:
