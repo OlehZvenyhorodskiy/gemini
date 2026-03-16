@@ -40,7 +40,7 @@ export default function NexusPage() {
     const { theme, switchTheme } = themeHook;
 
     const {
-        audioQueueRef, isPlayingRef, playbackCtxRef,
+        audioQueueRef, isPlayingRef, playbackCtxRef, captureCtxRef,
         outputAnalyserRef,
         handleAudioResponse, playNextChunk, flushAudio,
     } = useAudioEngine();
@@ -170,6 +170,7 @@ export default function NexusPage() {
         wsRef, sendInterrupt, addSystemMessage,
         isPlayingRef, audioQueueRef, mode,
         processGestures, handLandmarkerRef,
+        captureCtxRef,
     );
     const {
         isRecording, isCameraOn, isScreenSharing,

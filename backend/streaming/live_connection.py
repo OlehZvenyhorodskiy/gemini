@@ -300,7 +300,20 @@ class LiveConnection:
                     for part in model_turn.parts:
                         if part.inline_data and isinstance(part.inline_data.data, bytes):
                             # Audio chunk — send it for playback
-                            b64_audio = base64.b64encode(part.inline_data.data).decode("utf-8")
+                            audio_bytes = part.inline_data.data
+                            
+                            # CRITICAL FIX: Detect and fix double Base64 encoding (occurs in some SDK versions)
+                            try:
+                                # If it looks like printable ASCII, it's likely double-encoded base64 string
+                                if len(audio_bytes) > 0:
+                                    sample = audio_bytes[:20]
+                                    if all(32 <= b <= 126 for b in sample):
+                                        audio_bytes = base64.b64decode(audio_bytes)
+                                        logger.debug("Detected and corrected double base64 encoding")
+                            except Exception:
+                                pass # Use original if decoding fails
+
+                            b64_audio = base64.b64encode(audio_bytes).decode("utf-8")
                             await self.output_queue.put({
                                 "type": "audio",
                                 "data": b64_audio,

@@ -36,6 +36,7 @@ export function useMediaCapture(
     mode: string,
     processGestures: ((landmarks: any[]) => void) | null,
     handLandmarkerRef: React.MutableRefObject<any | null>,
+    captureCtxRef: React.MutableRefObject<AudioContext | null>,
 ): UseMediaCaptureReturn {
     const [isRecording, setIsRecording] = useState(false);
     const [isCameraOn, setIsCameraOn] = useState(false);
@@ -44,7 +45,6 @@ export function useMediaCapture(
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const videoRef = useRef<HTMLVideoElement | null>(null);
     const animationRef = useRef<number>(0);
-    const audioContextRef = useRef<AudioContext | null>(null);
     const analyserRef = useRef<AnalyserNode | null>(null);
     const mediaStreamRef = useRef<MediaStream | null>(null);
     const workletNodeRef = useRef<AudioWorkletNode | null>(null);
@@ -67,7 +67,7 @@ export function useMediaCapture(
     const stopRecording = useCallback(() => {
         if (workletNodeRef.current) { workletNodeRef.current.disconnect(); workletNodeRef.current = null; }
         if (mediaStreamRef.current) { mediaStreamRef.current.getTracks().forEach((t) => t.stop()); mediaStreamRef.current = null; }
-        if (audioContextRef.current) { audioContextRef.current.close(); audioContextRef.current = null; }
+        // Note: we don't close the captureCtxRef here as it's shared and managed by useAudioEngine
         if (animationRef.current) cancelAnimationFrame(animationRef.current);
         setIsRecording(false);
     }, []);
@@ -80,8 +80,14 @@ export function useMediaCapture(
                 audio: { sampleRate: 16000, channelCount: 1, echoCancellation: true, noiseSuppression: true },
             });
             mediaStreamRef.current = stream;
-            const audioCtx = new AudioContext({ sampleRate: 16000 });
-            audioContextRef.current = audioCtx;
+            
+            if (!captureCtxRef.current) {
+                captureCtxRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({
+                    sampleRate: 16000,
+                    latencyHint: "interactive"
+                });
+            }
+            const audioCtx = captureCtxRef.current;
 
             const source = audioCtx.createMediaStreamSource(stream);
             const analyser = audioCtx.createAnalyser();
