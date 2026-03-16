@@ -8,7 +8,7 @@ export { useTheme, ALL_THEMES, THEME_PRESETS } from "./useTheme";
 export type { ThemeMode, ThemePreset, CustomColors, UseThemeReturn } from "./useTheme";
 
 export { useAudioEngine } from "./useAudioEngine";
-export type { AudioQueueItem, UseAudioEngineReturn } from "./useAudioEngine";
+export type { AudioQueueItem, AudioEngineAPI } from "./useAudioEngine";
 
 export { useNexusSocket } from "./useNexusSocket";
 export type {
